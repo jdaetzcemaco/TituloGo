@@ -1,0 +1,508 @@
+﻿Departamento,Familia,Categoria,Nomenclatura sugerida,Ejemplo aplicado
+MATERIALES DE CONSTRUCCION,AISLANTE S,ACCESORIOS PARA AISLANTE ,Tipo + Dimensiones y/o cantidad de piezas + Color,Accesorios para Aislante Grapas 1000pz Azul
+MATERIALES DE CONSTRUCCION,AISLANTE S,CASETON DE POLIESTIRENO ,Tipo + Dimensiones y/o cantidad de piezas + Color,Caseton Poliestireno 60x60x2cm Blanco
+MATERIALES DE CONSTRUCCION,AISLANTE S,FIBRA DE VIDRIO ,Tipo + Dimensiones y/o cantidad de piezas + Color,"Fibra de Vidrio R-13 15""x93""x3.5"" Gris"
+MATERIALES DE CONSTRUCCION,AISLANTE S,FOAMULAR Y PLACAS POLIESTIRENO ,Tipo + Dimensiones y/o cantidad de piezas + Color,"Foamular XPS R-10 2""x4'x8' Plata"
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,ADITIVOS/REPARADORES CONCRETO,Tipo + Peso + Medida/Presentación,Aditivos Reparadores Concreto Plastificante 1L
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,ARENAS Y GRAVA ,Tipo + Peso + Medida/Presentación,Arena Gruesa m³
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,CAL,Tipo + Peso + Medida/Presentación,Cal Hidratada 20kg
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,CEMENTOS,Tipo + Peso + Medida/Presentación,Cemento Portland Tipo I 50kg
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,AGREGADOS,Tipo + Peso + Medida/Presentación,"Agregados Piedrín 3/4"" m³"
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,HERRAMIENTAS PARA CONCRETO ,Tipo + Peso + Medida/Presentación,Herramientas Concreto Llana 30cm
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,MORTEROS,Tipo + Peso + Medida/Presentación,Mortero Premezclado 40kg
+MATERIALES DE CONSTRUCCION,AGLOMERANTES Y ADITIVOS,YESO EN SACO ,Tipo + Peso + Medida/Presentación,Yeso Construcción 40kg
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,BLOCK DE VIDRIO,Tipo + Medidas + Color + Acabado,Block Vidrio Wave 19x19x8cm Transparente
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,BLOCK,Tipo + Medidas + Color + Acabado,Block Standard 15x20x40cm Gris
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,ADOQUIN,Tipo + Medidas + Color + Acabado,Adoquín Hexagonal 20x20x6cm Gris
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,CAJAS DE REGISTRO,Tipo + Medidas + Color + Acabado,Caja Registro Eléctrica 30x30x15cm Mate
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,BALDOSAS,Tipo + Medidas + Color + Acabado,Baldosa Hormigón 40x40x4cm Gris
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,ANGULARES,Tipo + Medidas + Color + Acabado,Angular Concreto L 50x50x15cm
+MATERIALES DE CONSTRUCCION,PREFABRICADOS,LADRILLOS,Tipo + Medidas + Color + Acabado,Ladrillo Rojo 6x12x24cm Rústico
+MATERIALES DE CONSTRUCCION,PRODUCTOS METALICOS ,ALAMBRE / ALAMBRON ,Tipo + Recubrimiento/Acabado + Calibre + Largo,Alambre Galvanizado Cal.12 100m
+MATERIALES DE CONSTRUCCION,PRODUCTOS METALICOS ,ANILLOS ,Tipo + Recubrimiento/Acabado + Calibre + Largo,"Anillos Acero 1/2"" x 6m"
+MATERIALES DE CONSTRUCCION,PRODUCTOS METALICOS ,CASTILLOS ,Tipo + Recubrimiento/Acabado + Calibre + Largo,"Castillos Corrugado 3/8"" x 6m Grado 60"
+MATERIALES DE CONSTRUCCION,PRODUCTOS METALICOS ,MALLA SOLDADA ,Tipo + Recubrimiento/Acabado + Calibre + Largo,"Malla Soldada 6x6"" Cal.10 4x2m"
+MATERIALES DE CONSTRUCCION,PRODUCTOS METALICOS ,PLAFON ,Tipo + Recubrimiento/Acabado + Calibre + Largo,Plafón Metálico Suspendido 60x60cm
+MATERIALES DE CONSTRUCCION,VARILLAS DE HIERRO,MEDIDA 1,Tipo + Material + Grado/grosor + Medida,Varilla de Hierro Corrugado 1/2 Grado 6 m
+MATERIALES DE CONSTRUCCION,VARILLAS DE HIERRO,MEDIDA 2,Tipo + Material + Grado/grosor + Medida,Varilla Corrugada 3/4 Grado 2 m
+MATERIALES DE CONSTRUCCION,VARILLAS DE HIERRO,MEDIDA 3,Tipo + Material + Grado/grosor + Medida,Varilla de Hierro Lisa 3/8 plg 3 m
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,CANALETA Y ACCESORIOS,Tipo + Material + Medida/Presentación + Color,"Canaleta PVC 6"" x 3m Blanca"
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,FIELTRO P/TECHOS ,Tipo + Material + Medida/Presentación + Color,"Fieltro Asfáltico Techo 15 Lb 36"" x 144' Negro"
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,HERRAMIENTAS P/TECHOS ,Tipo + Material + Medida/Presentación,Herramientas Techos Martillo Techador
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,IMPERMEABILIZANTES ACRILICOS P/TECHOS ,Tipo + Material + Medida/Presentación + Color,Impermeabilizante Acrílico Techos 20L Blanco
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,TECHOS GALVANIZADOS,Tipo + Material + Medida/Presentación + Color,Techo Galvanizado Cal.26 12' Ondulado Negro
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,TECHOS POLICARBONATO,Tipo + Material + Medida/Presentación + Color,Techo Policarbonato 24' Transparente
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,PREFABRICADOS Y ASFÁLTICOS ,Tipo + Material + Medida/Presentación + Color,Prefabricado Asfáltico 3'x1m Negro
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,SELLADOR P/ENTRADA ,Tipo + Material + Medida/Presentación + Color,Sellador Entrada Techos 310ml Blanco
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,SHINGLE Y ACCESORIOS,Tipo + Material + Medida/Presentación + Color,Shingle Asfáltico Charcoal 3.05m² Negro
+MATERIALES DE CONSTRUCCION,TECHOS Y COMPLEMENTOS,"TEJAS BARRO, PVC y FIBROCEMENTO ",Tipo + Material + Medida/Presentación + Color,Teja Barro 15x30cm Roja
+MATERIALES DE CONSTRUCCION,PERFILES DE ACERO,PERFILES RECTANGULARES,Tipo + Medida/Presentación + Calibe + Recubrimiento,"Perfil Rectangular 2""x4"" 6m Cal.16"
+MATERIALES DE CONSTRUCCION,PERFILES DE ACERO,TUBERIA DE ACERO,Tipo + Medida/Presentación + Calibe + Recubrimiento,"Tubería Acero Galvanizada 1"" 6m Cédula 40"
+MATERIALES DE CONSTRUCCION,PERFILES DE ACERO,PERFILES TUBULARES,Tipo + Medida/Presentación + Calibe + Recubrimiento,"Perfil Tubular PTR 2""x2"" 6m Cal.14"
+MATERIALES DE CONSTRUCCION,PERFILES DE ACERO,PERFILES ABIERTOS,Tipo + Medida/Presentación + Calibe + Recubrimiento,"Perfil Abierto Angular 2""x1/8"" 6m"
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,TABLAYESO,Tipo + Dimensiones + Acabado,"Tablayeso Standard 1/2"" 4'x8' Liso"
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,PASTAS,Tipo + Dimensiones + Color,Pasta Juntas Tablayeso 27kg Blanca
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,PLANCHAS PARA CIELO FALSO,Tipo + Dimensiones + Acabado + Color,Plancha Cielo Falso 60x60cm Lisa Blanca
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,PERFIL GALVANIZADO,Tipo + Dimensiones + Acabado,"Perfil Estructural U 3-5/8"" 10' Galvanizado"
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,PANELES DE FIBROCEMENTO,Tipo + Dimensiones + Acabado,Panel Fibrocemento 8mm 122x244cm
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,AISLANTES LANAS,Tipo + Dimensiones + Acabado,"Aislante Lana Mineral 2"" 48"""
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,MOLDURAS,Tipo + Dimensiones + Acabado,Moldura Yeso 5cm x 2m Brillante
+MATERIALES DE CONSTRUCCION,TABICACIONES Y COMPLEMENTOS,PANEL ESTRUCTURAL,Tipo + Dimensiones + Color,Panel Estructural OSB 11mm 122x244cm Blanco
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",GEOTEXTILES,Tipo + Material + Medida + Presentación,Geotextil No Tejido 4'x100'
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",CINTAS DE PRIVACIDAD,Tipo + Material + Medida/Presentación + Color,Cinta Privacidad Malla 250' Verde
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",ALAMBRES,Tipo + Material + Medida/Presentación + Color,Alambre Púas Galvanizado 1320' Gris
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",MALLA ALAMBRE TEJIDA,Tipo + Material + Medida + Calibre + Color,Malla Alambre Tejida 6'x50' Cal.11 Negra
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",RAZOR RIBBON,Tipo + Material + Medida/Presentación + Recubrimiento,Razor Ribbon Concertina 450mm
+MATERIALES CONSTRUCCIÓN,"MALLAS, CERCOS Y ALAMBRES",ELECTROMALLAS,Tipo + Uso + Medida/Presentación + Color,Electromalla Ganadera 1.2mx100m Gris
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,MADERA RÚSTICA,Material + Especie/Tratamiento + Dimensiones,"Madera Rústica Pino 2""x4"" 12'"
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,MADERA SECA CEPILLADA,Material + Especie/Tratamiento + Dimensiones,"Madera Seca Cepillada Pino S4S 1""x6"" 8'"
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,MADERA TRATADA,Material + Especie/Tratamiento + Dimensiones,"Madera Tratada Pino CCA 2""x8"" 10' Verde"
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,ACCESORIOS METALICOS PARA MADERA ,Material + Especie/Tratamiento + Dimensiones,Accesorios Metálicos Madera Bracket 90°
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,PINO CHILENO,Material + Especie/Tratamiento + Dimensiones,"Pino Chileno 1""x4"" 10' Select"
+MATERIALES CONSTRUCCIÓN,MADERA DIMENSIONADA ,MACHIMBRE,Material + Especie/Tratamiento + Dimensiones,"Machimbre Pino 3/4""x3"" 8'"
+MATERIALES CONSTRUCCIÓN,MELAMINA ,ACCESORIOS PARA MELAMINA ,Tipo + Material + Medida + Color + Espesor,Accesorios Melamina Canto PVC 22mm
+MATERIALES CONSTRUCCIÓN,MELAMINA ,MELAMINA BLANCA,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina Blanca 18mm 122x244cm Lisa
+MATERIALES CONSTRUCCIÓN,MELAMINA ,MELAMINA LISA,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina Lisa 15mm 122x244cm Haya
+MATERIALES CONSTRUCCIÓN,MELAMINA ,MELAMINA TMX,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina TMX 18mm 122x244cm Roble
+MATERIALES CONSTRUCCIÓN,TABLEROS  DE MADERA,MDF,Tipo + Espesor + Medida/Presentación + Acabado,MDF 18mm 122x244cm Crudo
+MATERIALES CONSTRUCCIÓN,TABLEROS  DE MADERA,CELOSIA,Tipo + Espesor + Medida/Presentación + Acabado + Rústico,Celosía Hardboard 3mm 122x244cm
+MATERIALES CONSTRUCCIÓN,TABLEROS  DE MADERA,PANEL RANURADO ,Tipo + Espesor + Medida/Presentación + Color + Acabado,Panel Ranurado 15mm 122x244cm Blanco
+MATERIALES CONSTRUCCIÓN,TABLEROS  DE MADERA,OSB,Tipo + Espesor + Medida/Presentación + Acabado,OSB 11mm 122x244cm Estructural
+MATERIALES CONSTRUCCIÓN,TABLEROS  DE MADERA,TABLEROS DE MUEBLERIA,Tipo + Espesor + Medida/Presentación + Acabado,Tablero Mueblería 18mm Melaminico
+MATERIALES CONSTRUCCIÓN,PLYWOOD,PLYWOOD SANGRE/OKUME,Tipo + Espesor + Dimensiones + Uso,Plywood Okume 6mm 122x244cm A/B
+MATERIALES CONSTRUCCIÓN,PLYWOOD,PLYWOOD FENOLICO/BLACKFILM,Tipo + Espesor + Dimensiones + Uso,Plywood Fenólico 18mm 122x244cm WBP
+MATERIALES CONSTRUCCIÓN,PLYWOOD,PLYWOOD PINO/MAPLE,Tipo + Espesor + Dimensiones + Uso,Plywood Pino 12mm 122x244cm B/C
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,DEPOSITOS PARA AGUA,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Azul
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,PILAS,Tipo + Material + Capacidad + Color,Pila Cemento 2 Compartimientos Verde
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,BIODIGESTORES,Tipo + Material + Capacidad + Color,Biodigestor Para Aguas Negras Plástico 600L Beige
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,ACCESORIOS PARA DEPOSITOS,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Negro
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,CISTERNAS,Tipo + Material + Capacidad + Color,Cisterna Plástico Reforzado 5000L Negra
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,FOSAS SEPTICAS,Tipo + Material + Capacidad + Color,Fosa Séptica Fibra de Vidrio 5000L Gris
+MATERIALES CONSTRUCCIÓN,ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,DEPOSITOS ESPECIALIDAD,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Blanco
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,MADERA RÚSTICA,Material + Especie/Tratamiento + Dimensiones,"Madera Rústica Pino 2""x4"" 12'"
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,MADERA SECA CEPILLADA,Material + Especie/Tratamiento + Dimensiones,"Madera Seca Cepillada Pino S4S 1""x6"" 8'"
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,MADERA TRATADA,Material + Especie/Tratamiento + Dimensiones,"Madera Tratada Pino CCA 2""x8"" 10' Verde"
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,ACCESORIOS METALICOS PARA MADERA ,Material + Especie/Tratamiento + Dimensiones,Accesorios Metálicos Madera Bracket 90°
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,PINO CHILENO,Material + Especie/Tratamiento + Dimensiones,"Pino Chileno 1""x4"" 10' Select"
+Maderas puertas y ventanas* (MAT CONST.),MADERA DIMENSIONADA ,MACHIMBRE,Material + Especie/Tratamiento + Dimensiones,"Machimbre Pino 3/4""x3"" 8'"
+Maderas puertas y ventanas* (MAT CONST.),MELAMINA ,ACCESORIOS PARA MELAMINA ,Tipo + Material + Medida + Color + Espesor,Accesorios Melamina Canto PVC 22mm
+Maderas puertas y ventanas* (MAT CONST.),MELAMINA ,MELAMINA BLANCA,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina Blanca 18mm 122x244cm Lisa
+Maderas puertas y ventanas* (MAT CONST.),MELAMINA ,MELAMINA LISA,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina Lisa 15mm 122x244cm Haya
+Maderas puertas y ventanas* (MAT CONST.),MELAMINA ,MELAMINA TMX,Tipo + Espesor + Medida/Presentación + Color + Acabado,Melamina TMX 18mm 122x244cm Roble
+Maderas puertas y ventanas* (MAT CONST.),TABLEROS  DE MADERA,MDF,Tipo + Espesor + Medida/Presentación + Acabado,MDF 18mm 122x244cm Crudo
+Maderas puertas y ventanas* (MAT CONST.),TABLEROS  DE MADERA,CELOSIA,Tipo + Espesor + Medida/Presentación + Acabado + Rústico,Celosía Hardboard 3mm 122x244cm
+Maderas puertas y ventanas* (MAT CONST.),TABLEROS  DE MADERA,PANEL RANURADO ,Tipo + Espesor + Medida/Presentación + Color + Acabado,Panel Ranurado 15mm 122x244cm Blanco
+Maderas puertas y ventanas* (MAT CONST.),TABLEROS  DE MADERA,OSB,Tipo + Espesor + Medida/Presentación + Acabado,OSB 11mm 122x244cm Estructural
+Maderas puertas y ventanas* (MAT CONST.),TABLEROS  DE MADERA,TABLEROS DE MUEBLERIA,Tipo + Espesor + Medida/Presentación + Acabado,Tablero Mueblería 18mm Melaminico
+Maderas puertas y ventanas* (MAT CONST.),PLYWOOD,PLYWOOD SANGRE/OKUME,Tipo + Material + Espesor + Dimensiones,Puerta de Plywood 6mm 122x244cm
+Maderas puertas y ventanas* (MAT CONST.),PLYWOOD,PLYWOOD FENOLICO/BLACKFILM,Tipo + Material + Espesor + Dimensiones,Puerta Plywood Fenólico 18mm 122x244cm WBP
+Maderas puertas y ventanas* (MAT CONST.),PLYWOOD,PLYWOOD PINO/MAPLE,Tipo + Material + Espesor + Dimensiones,Plywood Pino 12mm 122x244cm B/C
+Maderas puertas y ventanas,PUERTAS,PUERTAS INTERIOR,Tipo + Material + Medida + Color,Puerta MDF 90x210cm Blanca
+Maderas puertas y ventanas,PUERTAS,MARCOS PARA PUERTAS,Tipo + Material + Medida + Color,Marco para Puerta MDF 90x210cm Blanca
+Maderas puertas y ventanas,PUERTAS,PUERTAS EXTERIOR,Tipo + Material + Medida + Color,Puerta MDF 90x210cm Café
+Maderas puertas y ventanas,PUERTAS,PUERTAS CLOSET,Tipo + Material + Medida + Color,Puerta MDF 90x210cm Natural
+Maderas puertas y ventanas,VENTANAS,VENTANAS PVC,Tipo + Material + Medida/Presentación + Color,Ventana Corrediza PVC 120x100cm Blanca
+Maderas puertas y ventanas,VENTANAS,TOLDOS Y ALEROS,Tipo + Material + Medida/Presentación + Color,Toldo Retráctil 3x2.4m Rayado Negra
+Maderas puertas y ventanas,ACCESORIOS DE VENTANAS,CEDAZO,Tipo + Material + Medida + Color + Presentación,Cedazo Fibra de Vidrio 48 plg Negro Venta por Metro
+Maderas puertas y ventanas,ACCESORIOS DE VENTANAS,PASADORES VENTANAS,Tipo + Material + Medida + Color + Acabado,Pasador de sobreponer tipo barril 8 cm acabado latón brillante
+Maderas puertas y ventanas,ACCESORIOS DE VENTANAS,CORTINAS,Tipo + Material + Medida/Presentación + Color,Cortina Industrial PVC Transparente
+Maderas puertas y ventanas,MOLDURAS ,TORNEADOS Y ACCESORIOS,Tipo + Material + Perfil + Medida/Presentación + Color,Torneado Madera Balaustre 90cm
+Maderas puertas y ventanas,MOLDURAS ,MOLDURA DE POLIESTILENO ,Tipo + Material + Perfil + Medida/Presentación + Color,Moldura Poliestireno 5cm x 2m Blanca
+Maderas puertas y ventanas,MOLDURAS ,MOLDURAS DE MADERA ,Tipo + Material + Perfil + Medida/Presentación + Color,Moldura Madera Base 7cm x 2.4m
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,ESTANTERIAS,Tipo + Material + Medida/Presentación + Capacidad + Color,Estantería Metal 5 Niveles 180x90x40cm Café
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,CAJAS DE ALMACENAJE,Tipo + Material + Medida/Presentación + Capacidad + Color,Caja Almacenaje Plástico 64L Transparente
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,ORGANIZACIÓN DE CLOSET,Tipo + Material + Medida/Presentación + Capacidad + Color,Organizador Closet Zapatos 10 Pares
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,SERCHAS,Tipo + Material + Medida/Presentación + Capacidad + Color,Sercha Metal Galvanizada 15cm Beige
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,REPISAS,Tipo + Material + Medida/Presentación + Capacidad + Color,Repisa Flotante 80x25cm Blanca
+FERRETERIA* (ELECTRÓNICA),ALMACENAJE Y ORGANIZACIÓN,SOPORTE DE TV,Tipo + Material + Medida/Presentación + Capacidad + Color,"Soporte TV Pared 32-65"" Articulado Negro"
+FERRETERIA* (MUEBLES DE EXTERIOR),ALMACENAJE Y ORGANIZACIÓN,MESAS DE EXTERIOR,Tipo + Material + Medida/Presentación + Capacidad + Color,Mesa Exterior Plástico 120x80cm Blanca
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,GAVETAS Y GAVETEROS,Tipo + Material + Medida/Presentación + Capacidad + Color,Gavetero Plástico 3 Gavetas Blanco
+FERRETERIA* (ORGANIZACIÓN),ALMACENAJE Y ORGANIZACIÓN,OTROS ALMACENAJE Y ORGANIZACIÓN,Tipo + Material + Medida/Presentación + Capacidad + Color,Gancho Pared Multiusos 5cm Gris
+FERRETERIA* (ELECTRODOMÉSTICOS),AMBIENTE Y TEMPERATURA,VENTILADORES,Tipo + Material + Medida/Presentación + Capacidad + Color,"Ventilador Mesa 12"" 3 Velocidades Blanco"
+FERRETERIA* (ELECTRODOMÉSTICOS),AMBIENTE Y TEMPERATURA,CALEFACTORES,Tipo + Material + Medida/Presentación + Capacidad + Color,Calefactor Eléctrico 1500W Portátil Negro
+FERRETERIA* (ELECTRODOMÉSTICOS),AMBIENTE Y TEMPERATURA,AIRE ACONDICIONADO PORTATIL,Tipo + Material + Medida/Presentación + Capacidad + Color,Aire Acondicionado Portátil 12000 BTU Blanco
+FERRETERIA* (ELECTRODOMÉSTICOS),AMBIENTE Y TEMPERATURA,AIRE ACONDICIONADO PARED,Tipo + Material + Medida/Presentación + Capacidad + Color,Aire Acondicionado Pared 18000 BTU Blanco
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACIONES METAL,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Metal Autorroscante #10x1"" Zinc 100pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACIONES CONCRETO,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Concreto Wedge 1/2""x4"" Galv 10pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACIONES MADERA,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Madera Tirafondo #8x2.5"" Zinc 50pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACIONES TABLAYESO,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Tablayeso Toggle 1/8""x3"" 25pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACION PARA TECHO,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Techo Autorroscante #14x2"" 100pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",FIJACIONES MAQUINA,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Fijación Máquina Hex #10x1/2"" Zinc 100pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",CLAVOS,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Clavo Common 3"" Hot Dip Galv 5 Lb"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",ANCLAJES,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Anclaje Expansión 1/2""x6"" Zinc 10pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",TARUGOS ROLDANAS Y WASHAS,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,Tarugo Plástico #8 100pz
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",TUERCAS,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,"Tuerca Hex 1/2"" Zinc 25pz"
+FERRETERIA,"FIJACIONES, TORNILLERIA Y ACCESORIOS",OTRAS FIJACIONES,Tipo + Material + Medidas/Presentación + Recubrimiento + Cantidad,Fijación Especial Química 300ml
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,CERRADURAS DE POMO,Tipo + Material + Medidas + Grado/Característica Principal,Cerradura Pomo Entrada Satin Nickel Grade 2
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,CERRADURAS SOBREPONER,Tipo + Material + Medidas + Grado/Característica Principal,Cerradura Sobreponer 3 Puntos Dorado
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,OTRAS CERRADURAS,Tipo + Material + Medidas + Grado/Característica Principal,Cerradura Embutir Cilindro Europeo
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,CANDADOS,Tipo + Material + Medidas + Grado/Característica Principal,Candado Laminado 50mm Acero Inox 4-Pin
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,CAJAS DE SEGURIDAD,Tipo + Material + Medidas + Grado/Característica Principal,Caja Seguridad Fire-Safe 30x40x35cm Digital
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,CERROJOS,Tipo + Material + Medidas + Grado/Característica Principal,Cerrojo Sobreponer 15cm Dorado
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,REPUESTOS CERRADURAS,Tipo + Material + Medidas + Grado/Característica Principal,Repuesto Cerradura Cilindro 70mm
+FERRETERIA,SEGURIDAD Y CONTROL ACCESOS,OTROS SEGURIDAD Y CONTRO DE ACCESOS,Tipo + Material + Medidas + Grado/Característica Principal,Control Acceso Biométrico
+FERRETERIA,"LAZOS, CADENAS, CABLES Y ALAMBRES",LAZOS,Tipo + Medida/Presentación + Recubrimiento,"Lazo Nylon 1/4"" 100' Negro"
+FERRETERIA,"LAZOS, CADENAS, CABLES Y ALAMBRES",CADENAS,Tipo + Medida/Presentación + Recubrimiento,"Cadena Acero 1/4"" x 25' Galvanizada"
+FERRETERIA,"LAZOS, CADENAS, CABLES Y ALAMBRES",CABLES,Tipo + Medida/Presentación + Recubrimiento,"Cable Acero 1/8"" x 100' Galvanizado"
+FERRETERIA,"LAZOS, CADENAS, CABLES Y ALAMBRES",ALAMBRES,Tipo + Material + Medida/Presentación + Color,Alambre Púas Galvanizado 1320' Gris
+FERRETERIA,"LAZOS, CADENAS, CABLES Y ALAMBRES","OTROS LAZOS, CADENAS, CABLES Y ALAMBRES",Tipo + Medida/Presentación + Recubrimiento,"Cable Tensor 1/8"" x 10' Galvanizado"
+FERRETERIA,HERRAJES MUEBLES,HALADORES,Tipo + Material + Medida/Presentación + Acabado,Halador Bar Pull 128mm Satin Nickel
+FERRETERIA,HERRAJES MUEBLES,PROTECCION MUEBLES,Tipo + Material + Medida/Presentación + Acabado,Protección Muebles Fieltro Adhesivo
+FERRETERIA,HERRAJES MUEBLES,RODOS,Tipo + Material + Medida + Peso que soporta,"Rodo Giratorio 2"" 75kg"
+FERRETERIA,HERRAJES MUEBLES,CORREDERAS,Tipo + Material + Medida/Presentación,Corredera Full Extension 45cm 35kg
+FERRETERIA,HERRAJES MUEBLES,BISAGRAS CANGREJO,Tipo + Material + Medida/Presentación + Acabado,Bisagra Cangrejo 110° Soft Close
+FERRETERIA,HERRAJES MUEBLES,RODOS,Tipo + Material + Medida + Peso que soporta,"Rodo Giratorio 2"" 75kg"
+FERRETERIA,HERRAJES MUEBLES,SOPORTE DE MUEBLES,Tipo + Material + Medida/Presentación,Soporte Muebles Ajustable 150-170mm
+FERRETERIA,HERRAJES MUEBLES,CERROJOS MUEBLES,Tipo + Material + Medida/Presentación + Acabado,Cerrojo Mueble Push-Lock 22mm Cromado
+FERRETERIA,HERRAJES MUEBLES,OTROS HERRAJES MUEBLES,Tipo + Material + Medida/Presentación + Acabado,Herraje Mueble Lift-Up Hidráulico Perlado
+FERRETERIA,MUDANZAS,STRETCH FILM,Tipo + Material + Medida/Presentación + Color,"Stretch Film 18"" x 1500' Transparente"
+FERRETERIA,MUDANZAS,CAJAS DE CARTON,Tipo + Material + Medida/Presentación + Color,Caja Cartón Mudanza 60x40x40cm Café
+FERRETERIA,MUDANZAS,ACC. EMBALAJE,Tipo + Material + Medida/Presentación + Color,"Accesorios Embalaje Tape 2"" x 55yd Negro"
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",GEOTEXTILES,Tipo + Material + Medida + Presentación,Geotextil No Tejido 4'x100'
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",CINTAS DE PRIVACIDAD,Tipo + Material + Medida/Presentación + Color,Cinta Privacidad Malla 250' Verde
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",ALAMBRES,Tipo + Material + Medida/Presentación + Color,Alambre Púas Galvanizado 1320' Gris
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",MALLA ALAMBRE TEJIDA,Tipo + Material + Medida + Calibre + Color,Malla Alambre Tejida 6'x50' Cal.11 Negra
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",RAZOR RIBBON,Tipo + Material + Medida/Presentación + Recubrimiento,Razor Ribbon Concertina 450mm
+FERRETERÍA (MATER. CONST),"MALLAS, CERCOS Y ALAMBRES",ELECTROMALLAS,Tipo + Uso + Medida/Presentación + Color,Electromalla Ganadera 1.2mx100m Gris
+FERRETERIA,ACCESORIOS PARA PUERTAS,TOPES Y MIRILLAS,Tipo + Característica clave + Material + Medida/Presentación + Color,Tope Puerta Resorte Cromado Plata
+FERRETERIA,ACCESORIOS PARA PUERTAS,GUARDAPOLVOS PUERTAS,Tipo + Característica clave + Material + Medida/Presentación + Color,Guardapolvo Puerta PVC 1m Blanco
+FERRETERIA,ACCESORIOS PARA PUERTAS,TOPES DE PUERTA,Tipo + Característica clave + Material + Medida/Presentación + Color,Tope Puerta Magnético Cromado
+FERRETERIA,ACCESORIOS PARA PUERTAS,PORTACANDADOS PUERTAS,Tipo + Característica clave + Material + Medida/Presentación + Color,"Portacandado Puerta 8"" Galvanizado"
+FERRETERIA,ACCESORIOS PARA PUERTAS,ACCESORIOS PARA PUERTAS,Tipo + Característica clave + Material + Medida/Presentación + Color,"Accesorio Puerta Kick Plate 8""x30"" Dorado"
+FERRETERIA,ACCESORIOS PARA PUERTAS,BISAGRAS PUERTAS,Tipo + Característica clave + Material + Medida/Presentación + Color,"Bisagra Puerta 4"" x 4"" Satin Nickel"
+FERRETERIA,SISTEMA RIEL,ACC. RIELES MUEBLES,Tipo + Material + Medida/Presentación,Accesorios Rieles Tope Final 2x3 cms
+FERRETERIA,SISTEMA RIEL,RIELES GAVETA MUEBLE,Tipo + Material + Medida/Presentación + Capacidad + Acabado,Riel Gaveta Telescópico 45cm 35kg Cromado
+FERRETERIA,SISTEMA RIEL,SISTEMA CORREDIZO,Tipo + Material + Medida/Presentación + Capacidad + Acabado,Sistema Corredizo Puerta 2m 80kg Mate
+FERRETERIA,SISTEMA RIEL,RIELES PUERTAS CORREDIZA,Tipo + Material + Medida/Presentación + Capacidad + Acabado,Riel Puerta Corrediza 3m Aluminio Brillante
+FERRETERIA,SISTEMA RIEL,BARRAS CORT. ALUMINIO,Tipo + Material + Medida/Presentación + Capacidad + Acabado,Barra Cortina Aluminio 1.2-2.1m Satinado
+FERRETERIA,SISTEMA RIEL,BARRAS CORT. MADERA,Tipo + Material + Medida/Presentación + Capacidad + Acabado,Barra Cortina Madera 1.8m Roble Rústico
+PINTURAS,LATEX DE LINEA,DURA LÁTEX DE LÍNEA,Tipo + Línea + Acabado + Volúmen + Color,Dura Látex Línea ProClassic Semi-Gloss Base 1 3.78L Blanco
+PINTURAS,LATEX DE LINEA,CLÁSICA LÁTEX DE LÍNEA,Tipo + Línea + Acabado + Volúmen + Color,Clásica Látex Línea Eggshell Base 1 3.78L Negro
+PINTURAS,LATEX DE LINEA,MARCA PRIVADA 1 DE LÍNEA,Tipo + Línea + Acabado + Volúmen + Color,Marca Privada 1 Línea Flat Base 2 3.78L Gris
+PINTURAS,LATEX DE LINEA,MARCA PRIVADA 2 DE LÍNEA,Tipo + Línea + Acabado + Volúmen + Color,Marca Privada 2 Línea Satin Base 3 3.78L Azul
+PINTURAS,LATEX DE LINEA,COLORAMICA DE LINEA,Tipo + Línea + Acabado + Volúmen + Color,Colorámica Línea Mate Base 1 3.78L Blanco
+PINTURAS,LATEX DE LINEA,PENINSULAR DE LINEA,Tipo + Línea + Acabado + Volúmen + Color,Peninsular Línea Semi-Gloss Base 2 3.78L Blanco
+PINTURAS,LATEX DE LINEA,COLONIAL DE LINEA,Tipo + Línea + Acabado + Volúmen + Color,Colonial Línea Eggshell Base 1 3.78L Negro
+PINTURAS,LATEX DE LINEA,EXCELLO DE LINEA,Tipo + Línea + Acabado + Volúmen + Color,Excello Línea Satin Base 2 3.78L Gris
+PINTURAS,LATEX DE LINEA,SUPER PAINT DE LINEA,Tipo + Línea + Acabado + Volúmen + Color,Super Paint Línea Flat Base 3 3.78L Verde
+PINTURAS,LATEX ENTINTABLE,CLÁSICA LÁTEX ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Clásica Látex Entintable Eggshell Base 1 3.78L Blanco
+PINTURAS,LATEX ENTINTABLE,MARCA PRIVADA 1 ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Marca Privada 1 Entintable Flat Base 2 3.78L Azul
+PINTURAS,LATEX ENTINTABLE,MARCA PRIVADA 2 ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Marca Privada 2 Entintable Satin Base 3 3.78L Negro
+PINTURAS,LATEX ENTINTABLE,COLORAMICA ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Colorámica Entintable Mate Base 1 3.78L Blanco
+PINTURAS,LATEX ENTINTABLE,PENINSULAR ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Peninsular Entintable Semi-Gloss Base 2 3.78L Blanco
+PINTURAS,LATEX ENTINTABLE,COLONIAL ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Colonial Entintable Eggshell Base 1 3.78L Verde
+PINTURAS,LATEX ENTINTABLE,EXCELLO ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Excello Entintable Satin Base 2 3.78L Gris
+PINTURAS,LATEX ENTINTABLE,SUPER PAINT ENTINTABLE,Tipo + Línea + Acabado + Volúmen + Color,Super Paint Entintable Flat Base 3 3.78L Negro
+PINTURAS,IMPERMEABILIZACIÓN,IMPERMEABILIZANTES,Tipo + Volumen + Color + Aplicación + Años de garantía,Impermeabilizante Acrílico 20L Blanco 5 Años
+PINTURAS,IMPERMEABILIZACIÓN,TAPAGOTERAS Y TELAS DE REFUERZO,Tipo + Volumen + Color + Aplicación + Años de garantía,Tapagoteras Elastomérico 18.9L Blanco Fibrado 3 años
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,LIJAS Y ABRASIVOS,Tipo + Material + Medida/Presentación,"Lija Papel 220 Grit 9""x11"" 5pz"
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,WIPE,Tipo + Material + Medida/Presentación,Wipe Limpieza Trapo Industrial 50pz
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,CINTAS,Tipo + Material + Medida/Presentación,"Cinta Masking 1.5"" x 55yd Beige"
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,BROCHAS,Tipo + Material + Medida/Presentación,"Brocha Angular 2.5"" Bristle Natural Individual"
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,"RODILLOS, FELPAS, KITS Y EXTENSIONES",Tipo + Material + Medida/Presentación,"Rodillo Kit 9"" Nap 3/8"" con Bandeja"
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,ROCIADORES Y ACCESORIOS,Tipo + Material + Medida/Presentación,Rociador Pintura Airless 0.515 Tip
+PINTURAS,HERRAMIENTAS Y ACCESORIOS PARA PINTAR,"BANDEJAS, ESPONJAS Y COMPLEMENTOS",Tipo + Material + Medida/Presentación,"Bandeja Pintura 9"" Plástico con Rejilla"
+PINTURAS,ESCALERAS,ESCALERAS FIBRA DE VIDRIO,Tipo + Material + Altura + Peldaños + Capacidad,Escalera Fibra Vidrio 2.4m Step Ladder 136kg
+PINTURAS,ESCALERAS,ESCALERAS ALUMINIO,Tipo + Material + Altura + Peldaños + Capacidad,Escalera Aluminio 3m Extension 136kg
+PINTURAS,ESCALERAS,ESCALERAS TUBULARES,Tipo + Material + Altura + Peldaños + Capacidad,Escalera Tubular 1.8m Multi-Position 136kg
+PINTURAS,ESCALERAS,OTRAS ESCALERAS,Tipo + Material + Altura + Peldaños + Capacidad,Escalera Plataforma 1.2m Rolling 136kg
+PINTURAS,ADHESIVOS Y SELLADORES,PEGAMENTOS MULTIPLES ,Tipo + Aplicación + Volúmen + Color ,Pegamento Multiusos 60ml Transparente
+PINTURAS,ADHESIVOS Y SELLADORES,PISTOLAS SILICON ,Tipo + Aplicación + Volúmen + Color ,"Pistola Silicón Manual 9"" Celeste"
+PINTURAS,ADHESIVOS Y SELLADORES,PISTOLAS SELLADOR ,Tipo + Aplicación + Volúmen + Color ,Pistola Sellador Neumática 300ml Negra
+PINTURAS,ADHESIVOS Y SELLADORES,SELLADORES,Tipo + Aplicación + Volúmen + Color ,Sellador Silicón 300ml Transparente
+PINTURAS,ESMALTES Y ANTICORROSIVOS,COLORAMICA,Tipo + Línea + Base + Acabado + Volúmen,Esmalte Colorámica Base 1 Brillante 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,PENINSULAR,Tipo + Línea + Base + Acabado + Volúmen,Esmalte Peninsular Base 2 Semi-Gloss 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,COLONIAL,Tipo + Línea + Base + Acabado + Volúmen,Esmalte Colonial Base 1 Satin 3.78L Dorada
+PINTURAS,ESMALTES Y ANTICORROSIVOS,EXCELLO,Tipo + Línea + Base + Acabado + Volúmen,Esmalte Excello Base 2 Brillante 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,DURA ESMALTE,Tipo + Línea + Base + Acabado + Volúmen,Dura Esmalte Base 1 High-Gloss 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,CLÁSICA ESMALTE,Tipo + Línea + Base + Acabado + Volúmen,Clásica Esmalte Base 2 Semi-Gloss 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,CROMATIC ESMALTE,Tipo + Línea + Base + Acabado + Volúmen,Cromatic Esmalte Base 1 Brillante 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,ANTICORROSIVO 2000,Tipo + Línea + Base + Acabado + Volúmen,Anticorrosivo 2000 Gris Primer 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,ANTICORROSIVO 4000,Tipo + Línea + Base + Acabado + Volúmen,Anticorrosivo 4000 Rojo Óxido 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,ANTICORROSIVO 6000,Tipo + Línea + Base + Acabado + Volúmen,Anticorrosivo 6000 Zinc Rich  3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,CLÁSICA FAST DRY,Tipo + Línea + Base + Acabado + Volúmen,Clásica Fast Dry Blanco Esmalte 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,TRIMETAL,Tipo + Línea + Base + Acabado + Volúmen,Trimetal Aluminio Anticorrosivo 3.78L
+PINTURAS,ESMALTES Y ANTICORROSIVOS,ANTIOX,Tipo + Línea + Base + Acabado + Volúmen,Antiox Naranja Primer Metal 3.78L
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,LIMPIADORES Y REMOVEDORES ,Tipo + Función/Aplicación + Volúmen,Limpiador Removedor Pintura 3.78L
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,MASILLA REPARADORA,Tipo + Función/Aplicación + Volúmen,Masilla Reparadora Madera 200ml Natural
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,PRIMERS Y SELLADORES,Tipo + Función/Aplicación + Volúmen,Primer Sellador Pared 3.78L Blanco
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,SOLUCIONADORES ,Tipo + Función/Aplicación + Volúmen,Solucionador Pintura 3.78L
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,THINNER,Tipo + Función/Aplicación + Volúmen,Thinner Standard 3.78L
+PINTURAS,SOLVENTES Y PREPARADORES DE SUPERFICIE ,OTROS SOLVENTES,Tipo + Función/Aplicación + Volúmen,Solvente Especial Limpieza 1L
+PINTURAS,ACABADOS PARA MADERA,BARNICES Y ACABADOS ,Tipo + Volúmen + Color + Acabado,Barniz Poliuretano 3.78L Transparente Brillante
+PINTURAS,ACABADOS PARA MADERA,LACAS MADERA,Tipo + Volúmen + Color + Acabado,Laca Madera 1L Natural Semi-Mate
+PINTURAS,ACABADOS PARA MADERA,TINTES PARA MADERA,Tipo + Volúmen + Color + Acabado,Tinte Madera 946ml Nogal Penetrante
+PINTURAS,ACABADOS PARA MADERA,SELLADORES MADERA,Tipo + Volúmen + Color + Acabado,Sellador Madera 3.78L Transparente
+PINTURAS,ACABADOS PARA MADERA,OTROS ACCESORIOS DE MADERA,Tipo + Volúmen + Color + Acabado,Accesorio Madera Cera Paste 500ml
+PINTURAS,PINTURAS ESPECIALES,PINTURA DE TRÁFICO/SEÑALIZACIÓN,Tipo + Volúmen + Color,Pintura Tráfico 3.78L Amarillo Reflectiva
+PINTURAS,PINTURAS ESPECIALES,PINTURA CANCHAS,Tipo + Volúmen + Color,Pintura Canchas 3.78L Blanca Deportiva
+PINTURAS,PINTURAS ESPECIALES,PINTURA PISCINAS,Tipo + Volúmen + Color,Pintura Piscinas 3.78L Azul Clorocaucho
+PINTURAS,PINTURAS ESPECIALES,BARNICES CONCRETO,Tipo + Volúmen + Color,Barniz Concreto 3.78L Transparente
+PINTURAS,PINTURAS ESPECIALES,PINTURA AUTOMOTRIZ,Tipo + Volúmen + Color,Pintura Automotriz 1L Base Coat
+PINTURAS,PINTURAS ESPECIALES,OTRAS PINTURAS ESPECIALES,Tipo + Volúmen + Color,Pintura Especial Pizarrón 946ml Verde
+PINTURAS,PINTURAS ESPECIALES,PINTURAS SPRAY ,Tipo + Volúmen + Color,Pintura Spray 400ml Negro Mate
+BAÑOS Y COCINAS,LOZA SANITARIA,DOS PIEZAS,Tipo + Modelo + Medidas + Color,Sanitario Dos Piezas Elongated Blanco Standard Blanco
+BAÑO Y COCINA,LOZA SANITARIA,UNA PIEZA,Tipo + Modelo + Medidas + Color,Sanitario Una Pieza Elongated Blanco Comfort Height Blanco
+BAÑO Y COCINA,LOZA SANITARIA,ASIENTOS DE BAÑO,Tipo + Modelo + Medidas + Color,Asiento Baño Round Plastic Blanco Soft Close Beige
+BAÑO Y COCINA,LOZA SANITARIA,LAVAMANOS Y PEDESTAL,Tipo + Modelo + Medidas + Color,"Lavamanos Pedestal 24"" Blanco Vitreous China Gris"
+BAÑO Y COCINA,LOZA SANITARIA,LAVAMANOS DE SOBREPONER,Tipo + Modelo + Medidas + Color,"Lavamanos Sobreponer 19"" Oval Blanco"
+BAÑO Y COCINA,GRIFERIA DE BAÑO,GRIFOS PARA LAVAMANOS,Tipo + Modelo + Acabado + Instalación,Grifo Lavamanos Single Handle Centerset Cromado
+BAÑO Y COCINA,GRIFERIA DE BAÑO,CABEZAS Y REGADERAS DE DUCHA,Tipo + Modelo + Acabado + Instalación,Regadera Ducha 5-Spray Cromado
+BAÑO Y COCINA,GRIFERIA DE BAÑO,GRIFOS PARA DUCHAS,Tipo + Modelo + Acabado + Instalación,Grifo Ducha Single Handle Trim Cromado
+BAÑO Y COCINA,GRIFERIA DE BAÑO,ACC P/ DUCHAS,Tipo + Modelo + Acabado + Instalación,"Accesorio Ducha Grab Bar 24"" Cromado"
+BAÑO Y COCINA,GRIFERIA DE BAÑO,ACC P/BAÑOS,Tipo + Modelo + Acabado + Instalación,"Accesorio Baño Toallero 24"" Cromado"
+BAÑO Y COCINA,MUEBLES Y ESPEJOS,VANITY A PISO,Tipo + Línea + Medidas + Color + Cantidad de Puertas/Gavetas,Vanity Piso 76cm Gris 2 Puertas Sin Top
+BAÑO Y COCINA,MUEBLES Y ESPEJOS,VANITY EMPOTRAR,Tipo + Línea + Medidas + Color + Cantidad de Puertas/Gavetas,Vanity Empotrar 61cm Blanco 1 Puerta
+BAÑO Y COCINA,MUEBLES Y ESPEJOS,BOTIQUINES,Tipo + Línea + Medidas + Color + Cantidad de Puertas/Gavetas,Botiquín 61x71cm Rojo 10 Compartimentos
+BAÑO Y COCINA,MUEBLES Y ESPEJOS,ESPEJOS,Tipo + Línea + Medidas + Forma + Color,Espejo Modular 61x81cm Rectangular Blanco
+BAÑO Y COCINA,TINAS Y CABINAS,SHOWERS,Tipo + Medida/Presentación + Material,"Shower Kit Completo 32""x32"" Acrílico"
+BAÑO Y COCINA,TINAS Y CABINAS,MAMPARAS,Tipo + Medida/Presentación + Material,Mampara Ducha 120x185cm Vidrio Templado
+BAÑO Y COCINA,TINAS Y CABINAS,TINAS ,Tipo + Medida/Presentación + Material,"Tina Alcove 60""x32"" Acrílico Blanca"
+BAÑO Y COCINA,TINAS Y CABINAS,HIDROMASAJES,Tipo + Medida/Presentación + Material,Hidromasaje 180x90cm 12 Jets Cromado
+BAÑO Y COCINA* (BAÑOS HOGAR),ACCESORIOS Y COMPLEMENTOS,CORTINAS Y BARRAS,Tipo + Medida/Presentación + Color,Cortina Ducha 180x200cm PVC Transparente
+BAÑO Y COCINA* (BAÑOS HOGAR),ACCESORIOS Y COMPLEMENTOS,BASUREROS,Tipo + Medida/Presentación + Color,Basurero Baño 3L Plástico Blanco
+BAÑO Y COCINA* (BAÑOS HOGAR),ACCESORIOS Y COMPLEMENTOS,ANTIDESLIZANTES,Tipo + Medida/Presentación + Color,Antideslizante Ducha 35x75cm PVC Verde
+BAÑO Y COCINA* (BAÑOS HOGAR),ACCESORIOS Y COMPLEMENTOS,ORGANIZACIÓN DE BAÑO,Tipo + Medida/Presentación + Color,Organizador Baño 3 Niveles Cromado
+BAÑO Y COCINA,GRIFERIA DE COCINA,GRIFO MONOMANDO,Tipo + Modelo + Acabado,Grifo Monomando Pull-Down Acero Inox.
+BAÑO Y COCINA,GRIFERIA DE COCINA,GRIFO LLAVES,Tipo + Modelo + Acabado,"Grifo Llaves Bridge 8"" Centers Cromado"
+BAÑO Y COCINA,MUEBLES Y ACC DE COCINA,KITS DE COCINA,Tipo + Línea + Medidas + Color + Característica principal,Kit Cocina 180cm Blanco 2 Puertas 1 Gaveta
+BAÑO Y COCINA,MUEBLES Y ACC DE COCINA,COCINAS MODULARES,Tipo + Línea + Medidas + Color + Característica principal,Cocina Modular 240cm Blanco L-Shape
+BAÑO Y COCINA,MUEBLES Y ACC DE COCINA,COCINAS COMPACTAS,Tipo + Línea + Medidas + Color + Característica principal,Cocina Compacta 120cm Blanco 4 Quemadores
+BAÑO Y COCINA,MUEBLES Y ACC DE COCINA,LAVATRASTOS,Tipo + Línea + Medidas + Color + Característica principal,Lavatrastos Drop-In 84x56cm Doble Acero Inox
+BAÑO Y COCINA,MUEBLES Y ACC DE COCINA,ACC DE COCINA,Tipo + Línea + Medidas + Color + Característica principal,Accesorio Cocina Organizador Gaveta 60cm
+BAÑO Y COCINA,INSTITUCIONAL Y SEGURIDAD,BIDETS,Tipo + Medidas + Material + Certificación,Bidet Floor-Mount Blanco Vitreous China
+BAÑO Y COCINA,INSTITUCIONAL Y SEGURIDAD,GRIFOS INSTITUCIONAL,Tipo + Medidas + Material + Certificación,Grifo Institucional Sensor Chrome ADA
+BAÑO Y COCINA,INSTITUCIONAL Y SEGURIDAD,MINGITORIOS,Tipo + Medidas + Material + Certificación,Mingitorio Wall-Mount Blanco Vitreous China
+BAÑO Y COCINA,INSTITUCIONAL Y SEGURIDAD,SANITARIOS INSITUCIO,Tipo + Medidas + Material + Certificación,Sanitario Institucional Wall-Mount Elongated
+BAÑO Y COCINA,INSTITUCIONAL Y SEGURIDAD,SECADORES Y EXTRACTORES DE OLORES,Tipo + Medidas + Material + Certificación,Secador Manos Automático Push Button
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,BARRENOS ALAMBRICOS,Tipo + Modelo + Medida + Potencia + Voltaje,"Barreno Alámbrico 1/2"" 7.0A 110V VSR"
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,ESMERILADORAS ALAMBRICAS,Tipo + Modelo + Medida + Potencia + Voltaje,"Esmeriladora Alámbrica 4.5"" 7.5A Side Handle"
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,SIERRA CIRCULAR ALAMBRICA,Tipo + Modelo + Medida + Potencia + Voltaje,"Sierra Circular Alámbrica 7.25"" 15A"
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,LIJADORAS ALAMBRICAS,Tipo + Modelo + Medida + Potencia + Voltaje,Lijadora Alámbrica 1/4 Sheet 2.0A
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,CALADORAS Y SIERRAS SABLE ALAMBRICAS,Tipo + Modelo + Medida + Potencia + Voltaje,Caladora Alámbrica Variable Speed 5.0A
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,PISTOLA DE CALOR ALAMBRICAS,Tipo + Modelo + Medida + Potencia + Voltaje,Pistola Calor Alámbrica 1500W Variable Temp
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,MARTILLO DEMOLEDOR ALAMBRICO,Tipo + Modelo + Medida + Potencia + Voltaje,Martillo Demoledor 35 Lb SDS-Max 15A
+Herramientas,HERRAMIENTA ELECTRICA ALAMBRICA,OTRAS HERRAMIENTAS ALAMBRICAS,Tipo + Modelo + Medida + Potencia + Voltaje,Router Alámbrico 2.25 HP Variable Speed
+Herramientas* (Limpieza),"ASPIRADORAS, LIMPIADORES Y VAPORIZADORAS",ASPIRADORAS,Tipo + Potencia + Capacidad + Característica principal,Aspiradora Canister 12A 4L HEPA
+Herramientas* (Limpieza),"ASPIRADORAS, LIMPIADORES Y VAPORIZADORAS",LIMPIADORES Y VAPORIZADORAS,Tipo + Potencia + Capacidad + Característica principal,Limpiador Vapor 1500W 1.5L
+Herramientas* (Limpieza),"ASPIRADORAS, LIMPIADORES Y VAPORIZADORAS","ACCESORIOS ASPIRADORAS, LIMPIADORES Y VAPORIZADORAS.",Tipo + Potencia + Capacidad + Característica principal,Accesorio Aspiradora Cepillo Tapicería
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,BARRENOS INALAMBRICOS,Tipo + Modelo + Medida/Presentación + Voltaje,"Barreno Inalámbrico 1/2"" 18V Brushless"
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,ESMERILADORAS INALAMBRICAS,Tipo + Modelo + Medida/Presentación + Voltaje,"Esmeriladora Inalámbrica 4.5"" 18V Paddle Switch"
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,SIERRA CIRCULAR INALAMBRICA,Tipo + Modelo + Medida/Presentación + Voltaje,"Sierra Circular Inalámbrica 6.5"" 18V"
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,LIJADORAS INALAMBRICAS,Tipo + Modelo + Medida/Presentación + Voltaje,Lijadora Inalámbrica 1/4 Sheet 18V
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,CALADORAS Y SIERRAS SABLE INALAMBRICAS,Tipo + Modelo + Medida/Presentación + Voltaje,Caladora Inalámbrica 18V Tool-Only
+Herramientas,HERRAMIENTA ELECTRICA INALAMBRICA,OTRAS HERRAMIENTAS INALAMBRICAS,Tipo + Modelo + Medida/Presentación + Voltaje,Impact Driver Inalámbrico 18V Brushless
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,DESTORNILLADORES,Tipo + Medida + Catacterística Principal,"Destornillador Phillips #2 6"" Magnético"
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,LLAVES,Tipo + Medida + Catacterística Principal,Llave Combinada 10mm Chrome Vanadium
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,JUEGOS/SETS HERRAMIENTAS,Tipo + Medida + Catacterística Principal,Set Herramientas 145pz Mecánico
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,ALICATES,Tipo + Medida + Catacterística Principal,"Alicate Combinado 8"" Side Cutting"
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,MARTILLOS/MAZOS,Tipo + Medida + Catacterística Principal,Martillo Uña 16oz Fibra de Vidrio
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,CINTAS METRICAS,Tipo + Medida + Catacterística Principal,Cinta Métrica 7.5m x 25mm Magnética
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,NIVELES,Tipo + Medida + Catacterística Principal,"Nivel Aluminio 24"" 3 Burbujas"
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,SERRUCHOS FORMONES,Tipo + Medida + Catacterística Principal,"Serrucho Hand Saw 20"" 8 TPI"
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,PRENSAS,Tipo + Medida + Catacterística Principal,"Prensa C 6"" Capacity Heavy Duty"
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,ENGRAPADORAS,Tipo + Medida + Catacterística Principal,Engrapadora Manual Heavy Duty
+Herramientas,HERRAMIENTA MANUAL DE USO GENERAL,OTRAS HERRAMIENTAS MANUALES,Tipo + Material + Medida + Catacterística Principal,"Llave Inglesa Aluminio 12"" Ajustable"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,DISCOS ABRASIVOS,Tipo + Medida/Presentación + Material + Aplicación,"Disco Abrasivo 4.5"" para Metal"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,LIJAS,Tipo + Medida/Presentación + Material + Aplicación,"Lija Disco 5"" 120 Grit Hook & Loop para Madera"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,CINCELES SDS,Tipo + Medida/Presentación + Material + Aplicación,"Cincel SDS-Plus Point 6"" para Metal"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,BROCAS,Tipo + Medida/Presentación + Material + Aplicación,"Broca HSS 13pz Set 1/16""-1/4"" para Pared"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,ACC. ESMERILADORA,Tipo + Medida/Presentación + Material + Aplicación,"Accesorio Esmeriladora Guard 4.5"""
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,ACC. COMPRESORES,Tipo + Medida/Presentación + Material + Aplicación,Accesorio Compresor Manguera 25'
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,ACC. SIERRAS ELECTRICAS,Tipo + Medida/Presentación + Material + Aplicación,"Accesorio Sierra Blade 7.25"" 24T"
+Herramientas,ACCESORIOS PARA HERRAMIENTAS ELÉCTRICAS,OTROS ACCESORIOS,Tipo + Medida/Presentación + Material + Aplicación,Accesorio Taladro Chuck Key
+Herramientas,SEGURIDAD INDUSTRIAL,GUANTES,Tipo + Material + Talla + Color + Certificación,Guante Trabajo Large Synthetic Leather
+Herramientas,SEGURIDAD INDUSTRIAL,ZAPATOS DE SEGURIDAD,Tipo + Material + Talla + Color + Certificación,Zapato Seguridad Sz 10 Steel Toe
+Herramientas,SEGURIDAD INDUSTRIAL,MASCARILLAS Y RESPIRADORES,Tipo + Material + Talla + Color + Certificación,Mascarilla N95 Respirator 20pz
+Herramientas,SEGURIDAD INDUSTRIAL,CASCOS,Tipo + Material + Talla + Color + Certificación,Casco Seguridad Blanco 4-Point Ratchet
+Herramientas,SEGURIDAD INDUSTRIAL,ANTEOJOS,Tipo + Material + Talla + Color + Certificación,Anteojos Seguridad Clear Anti-Fog
+Herramientas,SEGURIDAD INDUSTRIAL,CHALECOS SEGURIDAD,Tipo + Material + Talla + Color + Certificación,Chaleco Seguridad Hi-Vis Orange XL
+Herramientas,SEGURIDAD INDUSTRIAL,ROPA,Tipo + Material + Talla + Color + Certificación,Ropa Trabajo Coverall Large Cotton
+Herramientas,SEGURIDAD INDUSTRIAL,BOTAS,Tipo + Material + Talla + Color + Certificación,Bota Seguridad Sz 10 Steel Toe Waterproof
+Herramientas,SEGURIDAD INDUSTRIAL,OTROS ACCESORIOS SEGURIDD INDUSTRIAL,Tipo + Material + Talla + Color + Certificación,Protector Auditivo Foam 200 Pares
+Herramientas,CAJAS DE HERRAMIENTAS Y ORGANIZADORES,CAJAS DE HERRAMIENTAS,Tipo + Material + Medidas + Característica Principal,"Caja Herramientas Metal 20"" 3 Gavetas"
+Herramientas,CAJAS DE HERRAMIENTAS Y ORGANIZADORES,ORGANIZADORES,Tipo + Material + Medidas + Característica Principal,Organizador Plástico 20x20 cms 15 Compartimentos
+Herramientas,GENERADORES DE ENERGIA Y COMPRESORAS,GENERADORES ENERGIA,Tipo + Potencia/Capacidad + Combustible,Generador Portátil 3500W Gasolina
+Herramientas,GENERADORES DE ENERGIA Y COMPRESORAS,COMPRESORES,Tipo + Potencia/Capacidad + Combustible,Compresor Aire 6 Galones Oil-Free
+Herramientas,GENERADORES DE ENERGIA Y COMPRESORAS,ACC DE COMPRESORES,Tipo + Material + Medida/Presentación,Accesorio Compresor Manguera 25'
+Herramientas,HERRAMIENTAS PARA SOLDAR,SOLDADURA ELECTRICA,Tipo + Amperaje + Voltaje + Característica Principal,Soldadora Eléctrica 130A 110V Stick
+Herramientas,HERRAMIENTAS PARA SOLDAR,SOLDADURA AUTOGENA,Tipo + Amperaje + Voltaje + Característica Principal,Soldadora Autógena Kit Completo
+Herramientas,HERRAMIENTAS PARA SOLDAR,ELECTRODOS Y MICROALAMBRES,Tipo + Amperaje + Voltaje + Característica Principal,"Electrodo E6013 1/8"" 1 Lb"
+Herramientas,HERRAMIENTAS PARA SOLDAR,OTRAS HERRAMIEN TAS PARA SOLDAR,Tipo + Amperaje + Voltaje + Característica Principal,Careta Soldar Auto-Darkening
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,TRUCKS,Tipo + Material + Medida/Presentación + Capacidad,Truck Hand 600 Lb Capacity
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,CUCHARAS,Tipo + Medida/Presentación + Capacidad + Material ,"Cuchara Albañil 10"" Acero Inox"
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,CINCELES Y PUNTAS,Tipo + Medida/Presentación + Capacidad + Material ,"Cincel Cold 1"" x 12"" Acero Inox"
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,ACC. INSTALACION PISO,Tipo + Material + Medida/Presentación,Accesorio Instalación Piso Spacer 3mm
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,HACHUELAS,Tipo + Material + Medida/Presentación,Hachuela Fibra de Vidrio 1.25 Lb 
+Herramientas,HERRAMIENTA MANUAL PARA CONSTRUCCIÓN,POLIPASTOS Y MALACATES,Tipo + Medida/Presentación + Capacidad,Polipasto Manual Chain Hoist 3 mts 2 Ton
+Herramientas* (Automotriz),LIMPIEZA Y MANT,ACEITES Y LUBRICANTES,Tipo + Capacidad + Voltaje + Característica Principal,Aceite Motor 5W-30 4L Sintético
+Herramientas* (Automotriz),LIMPIEZA Y MANT,HIDROLAVADORAS,Tipo + Capacidad + Voltaje + Característica Principal,Hidrolavadora 1800 PSI Electric
+Herramientas* (Automotriz),LIMPIEZA Y MANT,LIMPIADORES Y EMBELLECEDORES,Tipo + Capacidad + Característica Principal,Limpiador Autos Shampoo 946ml
+Herramientas* (Automotriz),LIMPIEZA Y MANT,ACC. HIDROLAVADORAS,Tipo + Capacidad + Característica Principal,"Accesorio Hidrolavadora Lanza 18"""
+Herramientas* (Automotriz),LIMPIEZA Y MANT,AROMATIZADORES,Tipo + Capacidad + Característica Principal,Aromatizador Auto Little Tree
+Herramientas* (Automotriz),HERRAMIENTAS Y REPUESTOS ,BATERIAS,Tipo + Voltaje + Característica Principal,Pasacorriente 12V 400A
+Herramientas* (Automotriz),HERRAMIENTAS Y REPUESTOS ,PASACORRIENTES Y ARRANCADORES,Tipo + Capacidad + Característica Principal,Gata Hidráulica 3 Ton Floor Jack
+Herramientas* (Automotriz),HERRAMIENTAS Y REPUESTOS ,"TORRES, GATAS Y TRICKETS",Tipo + Capacidad + Característica Principal,Embudo Aceite Flexible Spout
+Herramientas* (Automotriz),HERRAMIENTAS Y REPUESTOS ,EMBUDOS Y GALONERAS,Tipo + Capacidad + Característica Principal,Batería Auto 12V 650 CCA
+Herramientas* (Automotriz),COBERTORES Y ACC DE AUTOS,COBERTORES Y ALFOMBRAS,Tipo + Capacidad + Característica Principal,Cobertor Auto Universal All Weather
+Herramientas,HERRAMIENTAS ESTACIONARIAS,SIERRAS DE BANCO,Tipo + Capacidad + Potencia + Característica Principal,"Sierra Banco 10"" 15A Table Saw"
+Herramientas,HERRAMIENTAS ESTACIONARIAS,CEPILLOS DE BANCO,Tipo + Capacidad + Potencia + Característica Principal,"Cepillo Banco 13"" 15A Planer"
+Herramientas,HERRAMIENTAS ESTACIONARIAS,LIJADORAS DE BANCO,Tipo + Capacidad + Potencia + Característica Principal,"Lijadora Banco 6"" 1/3 HP Belt/Disc"
+Herramientas,HERRAMIENTAS ESTACIONARIAS,OTRAS HERRAMIENTAS ESTACIONARIAS,Tipo + Capacidad + Potencia + Característica Principal,"Torno Madera 12"" Variable Speed"
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,MEZCLADORAS DE CEMENTO,Tipo + Capacidad + Motor,Mezcladora Cemento 3.5 ft³ 5.5 HP
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,CARRETAS,Tipo + Capacidad + Motor,Carreta Construcción 6 ft³ Heavy Duty
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,CORTADORES DE CONCRETO,Tipo + Capacidad + Motor,"Cortador Concreto 14"" 5 HP Gas"
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,COMPACTADORAS,Tipo + Capacidad + Motor,Compactadora Plate 5000 lbf 5.5 HP
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,ALISADORAS,Tipo + Capacidad + Motor,"Alisadora Concreto 36"" Walk Behind"
+Herramientas,HERRAMIENTA PARA LA CONSTRUCCIÓN,OTRAS HERRAMIENTAS PARA LA CONSTRUCCION,Tipo + Capacidad + Motor,Vibrador Concreto 1.5 HP Electric
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,LLAVES DE IMPACTO NEUMATICA,Tipo + Línea/Modelo + Capacidad + PSI,"Llave Impacto Neumática 1/2"" 600 ft-lb"
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,CLAVADORAS NEUMATICAS,Tipo + Línea/Modelo + Capacidad + PSI,Clavadora Neumática Framing 21°
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,ENGRAPADORAS NEUMATICAS,Tipo + Línea/Modelo + Capacidad + PSI,"Engrapadora Neumática Crown 1/4"""
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,ESMERILADORAS NEUMATICAS,Tipo + Línea/Modelo + Capacidad + PSI,"Esmeriladora Neumática 4"" 90 PSI"
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,TIROLERAS NEUMATICAS,Tipo + Línea/Modelo + Capacidad + PSI,Tirolera Neumática Texture 90 PSI
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,RATCHET NEUMATICO,Tipo + Línea/Modelo + Capacidad + PSI,"Ratchet Neumático 3/8"" 50 ft-lb"
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,BARRENOS NEUMATICOS,Tipo + Línea/Modelo + Capacidad + PSI,"Barreno Neumático 3/8"" Reversible"
+Herramientas,HERRAMIENTAS NEUMÁTICAS Y ACCESORIOS,OTRAS HERRAMIENTAS NEUMARICAS,Tipo + Línea/Modelo + Capacidad + PSI,Cincel Neumático Heavy Duty
+Herramientas* (Jardinería),HERRAMIENTA MANUAL,HERRAMIENTA PARA JARDIN MANGO CORTO,Tipo + Tamaño + Motor + Característica principal,Herramienta Jardín Mango Corto Palita
+Herramientas* (Jardinería),HERRAMIENTA MANUAL,HERRAMIENTA PARA JARDIN MANGO LARGO,Tipo + Tamaño + Motor + Característica principal,Herramienta Jardín Mango Largo Pala
+Herramientas* (Jardinería),MAQUINARIA JARDIN,DESBROZADORAS Y ORILLADORAS,Tipo + Tamaño + Motor + Característica principal,"Motosierra 16"" 42cc 2-Cycle"
+Herramientas* (Jardinería),MAQUINARIA JARDIN,MOTOSIERRAS,Tipo + Tamaño + Motor + Característica principal,"Podadora Manual 8"" Bypass"
+Herramientas* (Jardinería),MAQUINARIA JARDIN,PODADORAS,Tipo + Tamaño + Motor + Característica principal,Desbrozadora 25cc 2-Cycle String
+Herramientas* (Jardinería),RIEGO JARDIN,SISTEMA DE RIEGO,Tipo + Tamaño + Motor + Característica principal,Sistema Riego Aspersores 6 Zonas
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,PROTECTOR/SUPRESOR,Tipo + Contactos + Joules + Longitud + AWG,Protector Supresor 8-Outlet 2400 Joules 6'
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,EXTENSIONES  Y ORGANIZADORES,Tipo + Contactos + Joules + Longitud + AWG,Extensión 4-Outlet 25' 12 AWG SJTW
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,UPS,Tipo + Funcionalidad + Potencia + Cantidad de Outlets,UPS Back-UPS Pro 1500VA 10 Outlets LCD
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,MULTICONTACTOS,Tipo + Funcionalidad + Potencia + Cantidad de Outlets,Multicontacto 6-Outlet Power Strip 4'
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,REGULADOR DE CORRIENTE,Tipo + Funcionalidad + Potencia + Cantidad de Outlets,Regulador Corriente 1500VA 8 Outlets
+ELECTRICOS,EXTENSIONES Y PROTECTORES DE CORRIENTE,CONVERTIDOR/TRANSFORMADOR,Tipo + Funcionalidad + Potencia + Cantidad de Outlets,Convertidor 110V-220V 1000W
+ELECTRICOS,CABLES Y ALAMBRES,THHN,Tipo + AWG + Longitud + Color + Certificación,Cable THHN 12 AWG Solid 500' Blanco
+ELECTRICOS,CABLES Y ALAMBRES,TSJ,Tipo + AWG + Longitud + Color + Certificación,Cable TSJ 12/3 SJOOW 100' Negro
+ELECTRICOS,CABLES Y ALAMBRES,SPT,Tipo + AWG + Longitud + Color + Certificación,Cable SPT-2 18 AWG 100' Blanco
+ELECTRICOS,CABLES Y ALAMBRES,UTP,Tipo + AWG + Longitud + Color + Certificación,Cable UTP Cat6 4-Pair 1000' Azul
+ELECTRICOS,CABLES Y ALAMBRES,COAXIAL,Tipo + AWG + Longitud + Color + Certificación,Cable Coaxial RG6 Quad Shield 500'
+ELECTRICOS,CABLES Y ALAMBRES,OTROS CABLES,Tipo + AWG + Longitud + Color + Certificación,Cable Control 18/8 500' Gris
+ELECTRICOS,CABLES Y ALAMBRES,ALAMBRE,Tipo + AWG + Longitud + Color + Certificación,Alambre THWN 14 AWG Solid 500' Verde
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,DIMMERS,Tipo + Amperaje + Color + Característica principal,Dimmer CL 150W LED/CFL Blanco 3-Way
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,INTERRUPTORES,Tipo + Amperaje + Color + Característica principal,Interruptor Decora 15A Single Pole Blanco
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,PLACAS,Tipo + Amperaje + Color + Característica principal,Placa Decora 1-Gang Blanco
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,TOMACORRIENTES,Tipo + Amperaje + Color + Característica principal,Tomacorriente Decora 20A GFCI Blanco
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,TOMASMULTIPLES,Tipo + Amperaje + Color + Característica principal,Toma Múltiple Decora 15A Duplex Blanco
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,MECANISMOS COMBINADOS,Tipo + Amperaje + Color + Característica principal,Mecanismo Combinado Switch/Outlet 15A
+ELECTRICOS,PLACAS Y MECANISMOS ELECTRICOS,SOPORTES,Tipo + Amperaje + Color + Característica principal,Soporte Placa Gang Box Extender
+ELECTRICOS,"SEGURIDAD, PILAS Y LINTERNAS",PILAS,Tipo + Material + Capacidad + Color,Pila Cemento 2 Compartimientos Verde
+ELECTRICOS,"SEGURIDAD, PILAS Y LINTERNAS",LINTERNA,Tipo + Medidas + Voltaje + Característica Principal,Linterna LED 200 Lumens 3AAA
+ELECTRICOS,"SEGURIDAD, PILAS Y LINTERNAS",CAMARAS E INTERCOMUNICADORES,Tipo + Medidas + Voltaje + Característica Principal,Cámara IP WiFi 1080p Night Vision
+ELECTRICOS,"SEGURIDAD, PILAS Y LINTERNAS",TIMBRES,Tipo + Medidas + Voltaje + Característica Principal,Timbre Inalámbrico 150m Range
+ELECTRICOS,"SEGURIDAD, PILAS Y LINTERNAS",TIMER,Tipo + Medidas + Voltaje + Característica Principal,Timer Digital 15A 7-Day Programmable
+ELECTRICOS,"ESPIGAS, TOMAS, PLAFONEROS Y OTROS",PLAFONERAS Y SOCKETS,Tipo + Medidas + Material + Certificación,Plafonera E26 Porcelana Medium Base
+ELECTRICOS,"ESPIGAS, TOMAS, PLAFONEROS Y OTROS",ESPIGA Y CONECTOR,Tipo + Medidas + Material + Certificación,Espiga NEMA 5-15P 15A 125V
+ELECTRICOS,"ESPIGAS, TOMAS, PLAFONEROS Y OTROS",CONVERTIDOR PARA ESPIGA,Tipo + Medidas + Material + Certificación,Convertidor Espiga 3-Prong to 2-Prong
+ELECTRICOS,"ESPIGAS, TOMAS, PLAFONEROS Y OTROS",INTERRUPTOR ESPECIAL,Tipo + Medidas + Material + Certificación,Interruptor Especial Motion Sensor 15A
+ELECTRICOS,DISTRIBUCION Y PROTECCION,FLIPON,Tipo + Amperaje + Polos + Tipo + Certificación,Flipón QO 20A Single Pole Circuit Breaker
+ELECTRICOS,DISTRIBUCION Y PROTECCION,TABLERO,Tipo + Amperaje + Polos + Tipo + Certificación,Tablero QO 12-Circuit 100A Load Center
+ELECTRICOS,DISTRIBUCION Y PROTECCION,CAJA PARA CONTADOR,Tipo + Amperaje + Polos + Tipo + Certificación,Caja Contador 4-Terminal 200A Ring Type
+ELECTRICOS,DISTRIBUCION Y PROTECCION,TIERRA FISICA,Tipo + Amperaje + Polos + Tipo + Certificación,Tierra Física Ground Rod 8' Copper
+ELECTRICOS,DISTRIBUCION Y PROTECCION,FUSIBLE,Tipo + Amperaje + Polos + Tipo + Certificación,Fusible Time Delay 15A 250V
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,HERRAMIENTAS Y ACCESORIOS ELECTRICISTA,Tipo + Capacidad + Uso,Herramienta Electricista Wire Stripper 10-22 AWG
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,MEDICION Y DETECCION,Tipo + Capacidad + Uso,Multímetro Digital 600V Cat III
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,CINTA,Tipo + Capacidad + Color,"Cinta Aislante 3/4"" x 60' Negro"
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,CINCHO PLASTICO,Tipo + Capacidad + Uso,"Cincho Plástico 8"" 50 Lb 100pz"
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,GRAPA PARA CABLE,Tipo + Capacidad + Uso,Grapa Cable Romex 14/2 100pz
+ELECTRICOS,HERRAMIENTAS Y ACCESORIOS PARA TRABAJO,"TERMINALES, CONECTORES Y PROTECTORES",Tipo + Capacidad + Uso,Terminal Wire Nut 12-10 AWG 25pz
+ELECTRICOS,CANALIZACION,CANAL PLASTICA,Tipo + Medida/Presentación + Color + Acabado,"Canal Plástica 1"" x 6' Blanca"
+ELECTRICOS,CANALIZACION,EMT,Tipo + Medida/Presentación + Color + Acabado,"Tubo EMT 1/2"" x 10' Galvanizado"
+ELECTRICOS,CANALIZACION,PVC ELECTRICO,Tipo + Medida/Presentación + Color + Acabado,"Tubo PVC Eléctrico 1"" x 10'"
+ELECTRICOS,CANALIZACION,FLEXITUBO,Tipo + Medida/Presentación + Color + Acabado,"Flexitubo 1/2"" x 100' Gris"
+ELECTRICOS,CANALIZACION,LIQUID TIGHT,Tipo + Medida/Presentación + Color + Acabado,"Liquid Tight 3/4"" x 50' Negro"
+ELECTRICOS,CANALIZACION,CONDUIT,Tipo + Medida/Presentación + Color + Acabado,"Conduit Rígido 1"" x 10' Galvanizado"
+ELECTRICOS,CANALIZACION,BX,Tipo + Medida/Presentación + Color + Acabado,Cable BX 12/2 AC 250'
+ELECTRICOS,CANALIZACION,POLIDUCTO,Tipo + Medida/Presentación + Color + Acabado,"Poliducto 4"" x 6m Corrugado"
+ELECTRICOS,CANALIZACION,UNICANAL,Tipo + Medida/Presentación + Color + Acabado,Unicanal 40x25mm x 2m Blanco
+ELECTRICOS,CANALIZACION,BANDEJA DE REJILLA,Tipo + Medida/Presentación + Color + Acabado,"Bandeja Rejilla 12"" x 10' Galvanizada"
+ELECTRICOS,CANALIZACION,ACCESORIO PARA SOPORTE DE TUBERIA,Tipo + Medida/Presentación + Color + Acabado,"Accesorio Soporte Tubo Abrazadera 1"""
+ELECTRICOS,CAJAS ELECTRICAS,CAJA RECTANGULAR,Tipo + Material + Medida/Presentación,"Caja Rectangular Metal 1-Gang 3.5"""
+ELECTRICOS,CAJAS ELECTRICAS,CAJA PARA INTEMPERIE,Tipo + Material + Medida/Presentación,Caja Intemperie NEMA 1-Gang Weatherproof
+ELECTRICOS,CAJAS ELECTRICAS,TAPADERA,Tipo + Material + Medida/Presentación,"Tapadera Caja 4"" Square Blank"
+ELECTRICOS,CAJAS ELECTRICAS,CAJA CUADRADA,Tipo + Material + Medida/Presentación,"Caja Cuadrada 4"" x 1.5"" Metal"
+ELECTRICOS,CAJAS ELECTRICAS,CAJA OCTAGONAL,Tipo + Material + Medida/Presentación,"Caja Octagonal 4"" x 1.5"" Metal"
+ELECTRICOS,CAJAS ELECTRICAS,CONDULET,Tipo + Material + Medida/Presentación,"Condulet LB 1/2"" Malleable Iron"
+ELECTRICOS,CAJAS ELECTRICAS,CAJA DE REGISTRO,Tipo + Material + Medida/Presentación,"Caja Registro 8"" x 8"" x 4"" PVC"
+ELECTRICOS,ENERGIA SOLAR,ACCESORIOS Y REPUESTOS PANELES SOLARES,Tipo + Watts + Voltaje + Característica Principal,Accesorio Solar MC4 Connector Pair
+ELECTRICOS,ENERGIA SOLAR,KIT SOLAR,Tipo + Watts + Voltaje + Característica Principal,Kit Solar 400W 12V Monocristalino
+PLOMERIA,CALENTADORES DE AGUA,CALENTADORES,Tipo + Capacidad + Combustible + Eficiencia,"Calentador 40 Gal Natural Gas 36,000 BTU"
+PLOMERIA,CALENTADORES DE AGUA,CALENTADORES PUNTO,Tipo + Capacidad + Combustible + Eficiencia,Calentador Punto 7L Electric Tankless
+PLOMERIA,CALENTADORES DE AGUA,REPUESTOS CALENTADORES,Tipo + Capacidad + Combustible + Eficiencia,Repuesto Calentador Thermostat Upper 4500W
+PLOMERIA,TUBERIA Y ACC,ACC. TUBERIA,Tipo + Dimensiones + Material + Color,"Accesorio Tubería Codo 90° 1/2"" Cobre"
+PLOMERIA,TUBERIA Y ACC,CEMENTO/PEGAMENTOS TUBERIA,Tipo + Dimensiones + Material + Color,Cemento PVC Regular 16 oz Clear
+PLOMERIA,TUBERIA Y ACC,TUBERIA COBRE,Tipo + Dimensiones + Material + Color,"Tubería Cobre Type L 1/2"" x 10'"
+PLOMERIA,TUBERIA Y ACC,TUBERIA CPVC,Tipo + Dimensiones + Material + Color,"Tubería CPVC CTS 3/4"" x 10'"
+PLOMERIA,TUBERIA Y ACC,TUBERIA PVC,Tipo + Dimensiones + Material + Color,"Tubería PVC Schedule 40 4"" x 10'"
+PLOMERIA,TUBERIA Y ACC,TUBERIA HG,Tipo + Dimensiones + Material + Color,"Tubería HG Galvanizada 1/2"" x 10'"
+PLOMERIA,TUBERIA Y ACC,SELLADORES TUBERIA,Tipo + Dimensiones + Material + Color,Sellador Tubería Thread Sealant 1/2 oz
+PLOMERIA,TUBERIA Y ACC,LIMPIADOR TUBERIA,Tipo + Dimensiones + Material + Color,Limpiador PVC Purple Primer 16 oz
+PLOMERIA,CONEXIONES Y DRENAJE,ACC. Y REPUESTOS FILTROS,Tipo + Medida/Presentación + Material,"Accesorio Filtro Cartucho 10"""
+PLOMERIA,CONEXIONES Y DRENAJE,FILTROS,Tipo + Medida/Presentación + Material,"Filtro Agua Whole House 20"""
+PLOMERIA,CONEXIONES Y DRENAJE,MANGUERAS Y CONECTORES,Tipo + Medida/Presentación + Material,"Manguera Flexible 1/2"" x 18"" Stainless"
+PLOMERIA,CONEXIONES Y DRENAJE,SIFONES Y ACCESORIOS,Tipo + Medida/Presentación + Material,"Sifón P-Trap 1.5"" PVC"
+PLOMERIA,CONEXIONES Y DRENAJE,REPOSADERAS,Tipo + Medida/Presentación + Material,"Reposadera Lavamanos 1.25"" Chrome"
+PLOMERIA,CONEXIONES Y DRENAJE,ACC. LAVADORA Y SECADORA,Tipo + Medida/Presentación + Material,"Accesorio 3/4"" Lavadora Outlet Box"
+PLOMERIA,CONEXIONES Y DRENAJE,CANASTAS LAVATRASTOS,Tipo + Medida/Presentación + Material,Canasta Lavatrastos 24plg Stainless Steel
+PLOMERIA,CONEXIONES Y DRENAJE,ACC. PARA TINA,Tipo + Medida/Presentación + Material,"Accesorio Tina 1/2"" Drain Assembly"
+PLOMERIA,CONEXIONES Y DRENAJE,COLADORES,Tipo + Medida/Presentación + Material,"Colador Piso 4"" Square Stainless"
+PLOMERIA,CONEXIONES Y DRENAJE,TAPONES DRENAJES,Tipo + Medida/Presentación + Material,"Tapón Drenaje 1.5"" Rubber"
+PLOMERIA,BOMBAS DE AGUA,BOMBAS DE AGUA,Tipo + HP + Voltaje + GPM,Bomba Agua Jet 1.5 HP 115/230V
+PLOMERIA,BOMBAS DE AGUA,ACC. BOMBAS DE AGUA,Tipo + HP + Voltaje + GPM,Accesorio Bomba Pressure Tank 20 Gal
+PLOMERIA,BOMBAS DE AGUA,MOTOBOMBAS HIDROJETS,Tipo + HP + Voltaje + GPM,Motobomba Hidrojet 1 HP Submersible
+PLOMERIA,LLAVES,CONTRALLAVES,Tipo + Medidas + Material,"Contrallave Curb Stop 3/4"""
+PLOMERIA,LLAVES,CHORROS,Tipo + Medidas + Material,"Chorro Riego 1/2"" Brass Ball Valve"
+PLOMERIA,LLAVES,VALVULAS,Tipo + Medidas + Material,"Válvula Ball 1/2"" Full Port Brass"
+PLOMERIA,LLAVES,MEDIDORES DE AGUA,Tipo + Medidas + Material,"Medidor Agua 5/8"" x 3/4"" PVC"
+PLOMERIA,DESAGÜE Y ACCESORIOS,REPUESTOS DE SANITARIO,Tipo + Material + Medidas + Aplicación,Repuesto Sanitario Flapper Universal
+PLOMERIA,DESAGÜE Y ACCESORIOS,DESAGUE LAVAMANOS Y ACCESORIOS,Tipo + Material + Medidas + Aplicación,"Desagüe Lavamanos Pop-Up 1.25"" Chrome"
+PLOMERIA,DESAGÜE Y ACCESORIOS,DESTAPADORES QUIMICOS DRENAJE,Tipo + Material + Medidas + Aplicación,Destapador Químico Drenaje 32 oz
+PLOMERIA,DESAGÜE Y ACCESORIOS,REPUESTOS PARA LOZA SANITARIA,Tipo + Material + Medidas + Aplicación,Repuesto Loza Fill Valve Universal
+PLOMERIA,DESAGÜE Y ACCESORIOS,FLANGE SANITARIO,Tipo + Material + Medidas + Aplicación,"Flange Sanitario 4"" x 3"" PVC"
+PLOMERIA,DESAGÜE Y ACCESORIOS,FLUXOMETROS,Tipo + Material + Medidas + Aplicación,Fluxómetro Manual 1.6 GPF
+PLOMERIA,ACCESORIOS GRIFERIA,COMPLEMENTOS/REPUESTOS GRIFO,Tipo + Material + Medidas + Aplicación,Repuesto Grifo Cartucho Single Handle
+PLOMERIA,ACCESORIOS GRIFERIA,DESTAPACAÑOS,Tipo + Material + Medidas + Aplicación,"Destapacaños Plunger 6"" Cup"
+PLOMERIA,ACCESORIOS GRIFERIA,ABRAZADERAS,Tipo + Capacidad/Medida + Material,"Abrazadera Tubo 1/2"" Stainless Steel"
+PLOMERIA,ACCESORIOS GRIFERIA,CORTADORES DE TUBO Y HERRAMIENTAS ,Tipo + Capacidad/Medida + Material,"Cortador Tubo 1/4""-2"" PVC"
+PLOMERIA,ACCESORIOS GRIFERIA,ACC. LAVATRASTOS,Tipo + Capacidad/Medida + Material,Accesorio Lavatrastos 1 plg Soap Dispenser
+PLOMERIA,ACCESORIOS GRIFERIA,TRITURADOR DE COMIDA,Tipo + Capacidad/Medida + Material,Triturador Comida 1/2 HP Continuous Feed
+PLOMERIA,ACCESORIOS GRIFERIA,EMPAQUES,Tipo + Material + Uso + Dimensiones + Color,Empaque de Goma para Grifo 3/4” Negro
+PLOMERIA,ACCESORIOS GRIFERIA,DESTUPIDORES,Tipo + Presentación + Aplicación + Característica Principal,Destupidor de Hule para Inodoros Mango Madera
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,DEPOSITOS PARA AGUA,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Azul
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,PILAS,Tipo + Material + Capacidad + Color,Pila Cemento 2 Compartimientos Verde
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,BIODIGESTORES,Tipo + Material + Capacidad + Color,Biodigestor Para Aguas Negras Plástico 600L Beige
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,ACCESORIOS PARA DEPOSITOS,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Negro
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,CISTERNAS,Tipo + Material + Capacidad + Color,Cisterna Plástico Reforzado 5000L Negra
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,FOSAS SEPTICAS,Tipo + Material + Capacidad + Color,Fosa Séptica Fibra de Vidrio 5000L Gris
+PLOMERIA* (MATERIALES DE CONSTRUCCIÓN),ALMACENAMIENTO Y TRATAMIENTO PARA AGUA,DEPOSITOS ESPECIALIDAD,Tipo + Material + Capacidad + Color,Depósito para Agua Polietileno 1100L Blanco
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",BOMBILLA LED,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Bombilla LED 9.5W A19 E26 2700K Dimmable
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",BOMBILLA DECORATIVA,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Bombilla Decorativa 40W ST19 E26 Vintage
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",BOMBILLA ESPECIAL Y SMART,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Bombilla Smart 9W A19 E26 WiFi RGB
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",BOMBILLA AHORRADORA,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Bombilla Ahorradora 23W Spiral E26 2700K
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",TUBO LED Y FLUORESCENTE,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Tubo LED 18W T8 4' 4000K
+ILUMINACION,"BOMBILLA, MANGUERA Y TUBOS",MANGUERA Y TIRA LED,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Tira LED 5m 5050 RGB 12V
+ILUMINACION,ILUMINACION COMERCIAL,PANEL LED,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Panel LED 40W 2x4 4000K 4000 Lumens
+ILUMINACION,ILUMINACION COMERCIAL,LUMINARIAS,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,"Luminaria LED 15W 6"" Recessed 3000K"
+ILUMINACION,ILUMINACION COMERCIAL,LAMPARA DE EMERGENCIA Y SENSORES,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Lámpara Emergencia LED 2-Head 3.6V
+ILUMINACION,ILUMINACION COMERCIAL,LAMPARA DE TRABAJO,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Lámpara Trabajo LED 50W Portable
+ILUMINACION,ILUMINACION COMERCIAL,LAMPARA  INDUSTRIAL,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Lámpara Industrial 150W High Bay 5000K
+ILUMINACION,ILUMINACION COMERCIAL,OTRAS LAMPARAS COMERCIALES,Tipo + Watts + Tipo Luz + Color/Material + Característica Principal,Lámpara Comercial Track Light 20W
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARA DE COLGAR Y TECHO,Tipo + Dimensiones + Material + Color + Estilo,"Lámpara Colgar 50"" Nickel 3-Light Chandelier Brushed "
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARA DE MESA Y ESCRITORIO,Tipo + Dimensiones + Material + Color + Estilo,Lámpara Mesa 58cm Vidrio Fabric Shade
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARA INTERIOR PARA PARED,Tipo + Dimensiones + Material + Color + Estilo,Lámpara Pared Interior 1-Light Sconce Chrome
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARAS DE PIE,Tipo + Dimensiones + Material + Color + Estilo,Lámpara Pie 150cm Floor Lamp Metal
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARAS DE RIEL Y SPOT,Tipo + Dimensiones + Material + Color + Estilo,Lámpara Riel 4-Light Track Adjustable
+ILUMINACION,ILUMINACION DECORATIVA,LAMPARA LUZ DE NOCHE,Tipo + Dimensiones + Material + Color + Estilo,Lámpara Noche LED Plug-In Motion Sensor
+ILUMINACION,ILUMINACION DECORATIVA,PLAFON,Tipo + Dimensiones + Material + Color + Estilo,Plafón 28cm Ceiling Light White Glass
+ILUMINACION,ILUMINACION EXTERIOR,LAMPARA PARA PISO Y GUIRNALDAS,Tipo + Watts + Tipo Luz + IP Rating,Lámpara Piso LED 3W Path Light
+ILUMINACION,ILUMINACION EXTERIOR,LAMPARA TIPO FAROL,Tipo + Watts + Tipo Luz + IP Rating,Lámpara Farol Post Light 100W
+ILUMINACION,ILUMINACION EXTERIOR,LAMPARA TIPO REFLECTOR,Tipo + Watts + Tipo Luz + IP Rating,Lámpara Reflector LED 50W Flood 5000K
+ILUMINACION,ILUMINACION EXTERIOR,LAMPARA EXTERIOR PARA PARED,Tipo + Watts + Tipo Luz + IP Rating,Lámpara Exterior Pared Wall Pack LED 20W
+ILUMINACION,ILUMINACION EXTERIOR,LAMPARA PARA ALUMBRADO PUBLICO,Tipo + Watts + Tipo Luz + IP Rating,Lámpara Alumbrado Público LED 100W
+ILUMINACION,ILUMINACION EXTERIOR,ILUMINACIÓN SOLAR,Tipo + Watts + Tipo Luz + IP Rating,Iluminación Solar 20W LED Panel Integrado
+ILUMINACION,VENTILADORES,VENTILADORES TECHO,Tipo + Dimensiones + Aspas + Motor + Color,Ventilador Techo 132cm 5-Aspas Reversible
+ILUMINACION,VENTILADORES,VENTILADOR EXTERIOR,Tipo + Dimensiones + Aspas + Motor + Color,Ventilador Exterior 107cm Wet Rated
+ILUMINACION,VENTILADORES,PLAFÓN CON VENTILADOR,Tipo + Dimensiones + Aspas + Motor + Color,Plafón Ventilador 107cm LED Light Kit Remote
