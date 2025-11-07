@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 from datetime import datetime
-import anthropic
+from anthropic import Anthropic
 import os
 
 # Page config
@@ -58,7 +58,7 @@ def generate_titles(product_info, nomenclature_pattern, transformations):
         st.error("❌ API key no configurada")
         return None
     
-    client = anthropic.Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key)
     
     prompt = f"""Eres un experto en crear títulos de productos para catálogos de retail en Guatemala.
 
