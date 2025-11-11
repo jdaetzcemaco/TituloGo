@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 from datetime import datetime
-from anthropic import Anthropic
+import anthropic
 import os
 
 # Page config
@@ -58,7 +58,7 @@ def generate_titles(product_info, nomenclature_pattern, transformations):
         st.error("❌ API key no configurada")
         return None
     
-    client = Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key)
     
     prompt = f"""Eres un experto en crear títulos de productos para catálogos de retail en Guatemala.
 
@@ -181,6 +181,45 @@ with st.sidebar:
     st.subheader("2. Memoria de Transformaciones")
     st.caption("Mantén consistencia en abreviaciones")
     
+    # Upload transformations file
+    uploaded_transformations = st.file_uploader(
+        "📤 Cargar Transformaciones Guardadas",
+        type=['json'],
+        key="upload_trans",
+        help="Sube un archivo JSON con transformaciones previamente guardadas"
+    )
+    
+    if uploaded_transformations:
+        try:
+            trans_data = json.load(uploaded_transformations)
+            st.session_state.transformation_memory = trans_data
+            st.success(f"✅ {len(trans_data)} transformaciones cargadas")
+        except Exception as e:
+            st.error(f"❌ Error al cargar transformaciones: {e}")
+    
+    # Load default transformations button
+    if st.button("🔄 Cargar Transformaciones Comunes", help="Carga un set de transformaciones típicas"):
+        default_transformations = {
+            "blanco": "bco",
+            "negro": "neg",
+            "gris": "grs",
+            "pulgadas": "plg",
+            "pulgada": "plg",
+            "centímetros": "cm",
+            "centimetros": "cm",
+            "metros": "m",
+            "kilogramos": "kg",
+            "gramos": "gr",
+            "litros": "L",
+            "mililitros": "ml",
+            "acero inoxidable": "acero inox",
+            "galvanizado": "galv",
+            "cromado": "crom"
+        }
+        st.session_state.transformation_memory.update(default_transformations)
+        st.success(f"✅ {len(default_transformations)} transformaciones comunes agregadas")
+        st.rerun()
+    
     # Add new transformation
     col1, col2 = st.columns(2)
     with col1:
@@ -192,6 +231,7 @@ with st.sidebar:
         if original and replacement:
             st.session_state.transformation_memory[original] = replacement
             st.success(f"Agregado: {original} → {replacement}")
+            st.rerun()
     
     # Display current transformations
     if st.session_state.transformation_memory:
@@ -204,6 +244,18 @@ with st.sidebar:
                 if st.button("🗑️", key=f"del_{orig}"):
                     del st.session_state.transformation_memory[orig]
                     st.rerun()
+        
+        # Download transformations button
+        trans_json = json.dumps(st.session_state.transformation_memory, indent=2, ensure_ascii=False)
+        st.download_button(
+            label="📥 Descargar Transformaciones",
+            data=trans_json,
+            file_name=f"transformaciones_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+            mime="application/json",
+            help="Guarda estas transformaciones para usarlas en el futuro"
+        )
+    else:
+        st.info("👆 Agrega transformaciones o carga un archivo guardado")
     
     st.markdown("---")
     

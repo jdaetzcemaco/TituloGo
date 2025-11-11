@@ -68,33 +68,51 @@ INFORMACIÓN DEL PRODUCTO:
 PATRÓN DE NOMENCLATURA A SEGUIR:
 {nomenclature_pattern}
 
-TRANSFORMACIONES CONSISTENTES A APLICAR:
+TRANSFORMACIONES DISPONIBLES (Usa solo si es necesario para cumplir límites):
 {json.dumps(transformations, indent=2, ensure_ascii=False)}
 
-INSTRUCCIONES:
-1. Genera 3 variantes de título siguiendo las reglas:
+INSTRUCCIONES CRÍTICAS:
+
+1. Genera 3 variantes de título siguiendo estas reglas:
    
    a) TÍTULO SISTEMA (40 caracteres máximo):
-      - Conciso, claro, sin marca si es genérico
+      - PRIORIDAD: Claridad y legibilidad
+      - Usa forma completa de palabras SI CABE en 40 caracteres
+      - Aplica transformaciones SOLO si necesitas acortar para cumplir el límite
+      - Ejemplo: Si "Cemento Blanco 50kg" cabe en 40 chars → usa "Blanco" completo
+      - Ejemplo: Si "Fibra de Vidrio Blanco 15x93x3.5" excede → usa "Bco"
       - Sigue el patrón de nomenclatura exactamente
-      - Usa abreviaciones estándar en español
-      - NO incluyas símbolos innecesarios
+      - Sin símbolos innecesarios
    
    b) TÍTULO ETIQUETA (36 caracteres máximo):
-      - Si el título sistema cabe en 36 caracteres, usa el mismo
-      - Si no, crea versión más corta manteniendo información crítica
-      - Mismas reglas que título sistema
+      - Si el título sistema cabe en 36 caracteres → usa el mismo (sin cambios)
+      - Si NO cabe:
+        * Primero intenta acortar manteniendo palabras completas
+        * Si aún no cabe, ENTONCES aplica transformaciones necesarias
+        * Prioriza legibilidad sobre brevedad cuando sea posible
+      - Mantén la información más crítica
    
    c) TÍTULO SEO (para e-commerce):
       - Más descriptivo, optimizado para búsqueda en cemaco.com
+      - Usa SIEMPRE formas completas (nunca abrevies aquí)
       - Incluye palabras clave relevantes en español
       - Puede incluir marca si aplica
-      - Sin límite estricto pero mantén entre 50-70 caracteres idealmente
+      - Entre 50-70 caracteres idealmente
 
-2. Aplica todas las transformaciones de memoria proporcionadas
-3. Mantén consistencia con abreviaciones guatemaltecas estándar
-4. NO uses símbolos como ® o ™
-5. Usa español de Guatemala
+2. LÓGICA DE TRANSFORMACIONES:
+   - Las transformaciones son una HERRAMIENTA, no una regla obligatoria
+   - Úsalas estratégicamente para cumplir límites
+   - Prefiere palabras completas cuando hay espacio
+   - Aplica transformaciones progresivamente (empieza con palabras menos importantes)
+   
+3. CRITERIO DE DECISIÓN:
+   - ¿Cabe completo? → Déjalo completo
+   - ¿Excede por 1-3 caracteres? → Acorta palabras largas primero
+   - ¿Excede por 4+ caracteres? → Aplica transformaciones necesarias
+   
+4. Mantén consistencia con abreviaciones guatemaltecas estándar
+5. NO uses símbolos como ® o ™
+6. Usa español de Guatemala
 
 RESPONDE SOLO CON UN JSON VÁLIDO en este formato exacto:
 {{
@@ -104,7 +122,8 @@ RESPONDE SOLO CON UN JSON VÁLIDO en este formato exacto:
   "longitud_etiqueta": 36,
   "titulo_seo": "...",
   "longitud_seo": 65,
-  "transformaciones_aplicadas": ["blanco→bco", "pulgadas→plg"],
+  "transformaciones_aplicadas": ["blanco→bco en etiqueta (límite)", "pulgadas→plg en ambos (límite)"],
+  "razon_transformaciones": "Sistema: cabía completo. Etiqueta: necesitaba 3 chars menos",
   "cumple_nomenclatura": true,
   "notas": "Explicación breve si hay algo relevante"
 }}
@@ -390,6 +409,10 @@ else:
                             if result.get('transformaciones_aplicadas'):
                                 st.info(f"**Transformaciones aplicadas:** {', '.join(result['transformaciones_aplicadas'])}")
                             
+                            # Show reasoning for transformations
+                            if result.get('razon_transformaciones'):
+                                st.caption(f"💡 Razonamiento: {result['razon_transformaciones']}")
+                            
                             # Save to history
                             result_with_meta = {
                                 **result,
@@ -501,6 +524,10 @@ else:
                             # Show transformations applied
                             if result.get('transformaciones_aplicadas'):
                                 st.info(f"**Transformaciones aplicadas:** {', '.join(result['transformaciones_aplicadas'])}")
+                            
+                            # Show reasoning for transformations
+                            if result.get('razon_transformaciones'):
+                                st.caption(f"💡 Razonamiento: {result['razon_transformaciones']}")
                             
                             # Save to history
                             result_with_meta = {
