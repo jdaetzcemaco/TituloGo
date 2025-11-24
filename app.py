@@ -225,7 +225,7 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
 
     try:
         message = client.messages.create(
-            model="",
+            model="claude-3-5-sonnet-latest",
             max_tokens=1000,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -237,7 +237,7 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
         result = json.loads(response_text)
 
         # --- Post-processing: remove brand + de-shout titles ---
-        brand = "claude-3-5-sonnet-latest"
+        brand = ""
         try:
             brand = (product_info.get("marca") or "").strip()
         except Exception:
