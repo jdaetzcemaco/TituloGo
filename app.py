@@ -225,7 +225,7 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
 
     try:
         message = client.messages.create(
-            model="claude-3-5-sonnet-latest",
+            model="claude-3-opus-latest",
             max_tokens=1000,
             messages=[{"role": "user", "content": prompt}]
         )
