@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from anthropic import Anthropic
 import os
+import re
 
 # Page config
 st.set_page_config(
@@ -92,6 +93,65 @@ def remove_brand_occurrences(text: str, brand: str) -> str:
     t = t.replace(_cap_first(brand.lower()), "")
     # Normalize spaces
     return " ".join(t.split()).strip()
+
+# ========= Helpers para match de nomenclatura =========
+
+def normalize_tax_value(value: str) -> str:
+    """
+    Normaliza valores de departamento/familia/categoría:
+    - Convierte a string
+    - Quita códigos entre paréntesis: 'Plomeria (0024)' -> 'Plomeria'
+    - Quita espacios extra
+    - Pone todo en MAYÚSCULAS
+    """
+    if value is None:
+        return ""
+    value = str(value)
+    # Quitar códigos tipo " (0024)"
+    value = re.sub(r"\s*\([^)]*\)", "", value)
+    return value.strip().upper()
+
+
+def find_pattern_row(nomenclature_df: pd.DataFrame, dept, fam, cat):
+    """
+    Busca la fila de nomenclatura correcta para un dept/familia/categoría de ERP.
+
+    1) Hace match por Departamento + Familia normalizados.
+    2) Intenta match exacto por Categoría normalizada.
+    3) Si no hay, elige la categoría con más palabras en común
+       con la categoría de ERP (PVC, CPVC, ACC, etc.).
+    """
+    dep_norm = normalize_tax_value(dept)
+    fam_norm = normalize_tax_value(fam)
+    cat_norm = normalize_tax_value(cat)
+
+    # Candidatos por departamento + familia
+    candidates = nomenclature_df[
+        (nomenclature_df['Departamento'].astype(str).apply(normalize_tax_value) == dep_norm) &
+        (nomenclature_df['Familia'].astype(str).apply(normalize_tax_value) == fam_norm)
+    ]
+    if candidates.empty:
+        return None
+
+    # 1) Match exacto de categoría normalizada
+    with_cat = candidates[
+        candidates['Categoria'].astype(str).apply(normalize_tax_value) == cat_norm
+    ]
+    if not with_cat.empty:
+        return with_cat.iloc[0]
+
+    # 2) Match “mejor esfuerzo” por palabras en común
+    cat_words = set(cat_norm.split())
+    if not cat_words:
+        return candidates.iloc[0]
+
+    def score(cat_val):
+        words = set(normalize_tax_value(cat_val).split())
+        return len(cat_words & words)
+
+    scores = candidates['Categoria'].apply(score)
+    best_idx = scores.idxmax()
+    return candidates.loc[best_idx]
 
 # =========================
 #   Claude Title Generator
@@ -647,7 +707,7 @@ else:
                 "Archivo con títulos",
                 type=['csv', 'xlsx', 'xls'],
                 key="simple_upload",
-                help="Solo necesitas una columna con los títulos del sistema"
+                help="Solo necesitas una columna con los títulos del sistema (puede incluir SKU)."
             )
             
             if uploaded_simple:
@@ -681,7 +741,7 @@ else:
                         )
                     else:
                         st.success(f"✅ {len(simple_df)} títulos cargados desde columna '{title_col}'")
-                        st.dataframe(simple_df[[title_col]].head(10))
+                        st.dataframe(simple_df.head(10))
                         if len(simple_df) > 10:
                             st.caption(f"Mostrando las primeras 10 de {len(simple_df)} filas")
                         
@@ -724,6 +784,8 @@ else:
                                                 'familia': selected_familia_simple,
                                                 'categoria': selected_categoria_simple
                                             }
+                                            if 'SKU' in simple_df.columns:
+                                                row_out['SKU'] = row['SKU']
                                             if want_sistema and 'titulo_sistema' in result:
                                                 row_out['titulo_sistema_generado'] = result['titulo_sistema']
                                             if want_etiqueta and 'titulo_etiqueta' in result:
@@ -759,7 +821,7 @@ else:
             # Modo completo
             # ---------------------
             st.markdown("### 📋 Modo Completo")
-            st.caption("Tu archivo debe incluir: titulo_sistema, departamento, familia, categoria")
+            st.caption("Tu archivo debe incluir: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)")
             
             st.markdown("### 🔍 Filtros (Opcional)")
             st.caption("Procesa solo productos de categorías específicas")
@@ -806,7 +868,7 @@ else:
                 "Archivo CSV o Excel con títulos y categorías",
                 type=['csv', 'xlsx', 'xls'],
                 key="batch_upload",
-                help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria"
+                help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)"
             )
             
             if uploaded_batch:
@@ -877,44 +939,50 @@ else:
                                         f"Procesando {idx + 1} de {len(filtered_df)}..."
                                     )
                                     
-                                    pattern_row = df[
-                                        (df['Departamento'] == row['departamento']) & 
-                                        (df['Familia'] == row['familia']) & 
-                                        (df['Categoria'] == row['categoria'])
-                                    ]
+                                    pattern = find_pattern_row(
+                                        df,
+                                        row['departamento'],
+                                        row['familia'],
+                                        row['categoria']
+                                    )
                                     
-                                    if not pattern_row.empty:
-                                        nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
-                                        
-                                        product_info = {
-                                            "titulo_sistema_existente": row['titulo_sistema'],
-                                            "departamento": row['departamento'],
-                                            "familia": row['familia'],
-                                            "categoria": row['categoria'],
-                                            "marca": ""
+                                    if pattern is None:
+                                        # No hay regla para esa categoría (ej. Pisos Rústicos hoy)
+                                        continue
+                                    
+                                    nomenclatura = pattern['Nomenclatura sugerida']
+                                    
+                                    product_info = {
+                                        "titulo_sistema_existente": row['titulo_sistema'],
+                                        "departamento": row['departamento'],
+                                        "familia": row['familia'],
+                                        "categoria": row['categoria'],
+                                        "marca": ""
+                                    }
+                                    
+                                    result = generate_titles(
+                                        product_info,
+                                        nomenclatura,
+                                        st.session_state.transformation_memory
+                                    )
+                                    
+                                    if result:
+                                        row_out = {
+                                            'titulo_sistema_original': row['titulo_sistema'],
+                                            'departamento': row['departamento'],
+                                            'familia': row['familia'],
+                                            'categoria': row['categoria']
                                         }
+                                        if 'SKU' in filtered_df.columns:
+                                            row_out['SKU'] = row['SKU']
+                                        if want_sistema and 'titulo_sistema' in result:
+                                            row_out['titulo_sistema_generado'] = result['titulo_sistema']
+                                        if want_etiqueta and 'titulo_etiqueta' in result:
+                                            row_out['titulo_etiqueta'] = result['titulo_etiqueta']
+                                        if want_seo and 'titulo_seo' in result:
+                                            row_out['titulo_seo'] = result['titulo_seo']
                                         
-                                        result = generate_titles(
-                                            product_info,
-                                            nomenclatura,
-                                            st.session_state.transformation_memory
-                                        )
-                                        
-                                        if result:
-                                            row_out = {
-                                                'titulo_sistema_original': row['titulo_sistema'],
-                                                'departamento': row['departamento'],
-                                                'familia': row['familia'],
-                                                'categoria': row['categoria']
-                                            }
-                                            if want_sistema and 'titulo_sistema' in result:
-                                                row_out['titulo_sistema_generado'] = result['titulo_sistema']
-                                            if want_etiqueta and 'titulo_etiqueta' in result:
-                                                row_out['titulo_etiqueta'] = result['titulo_etiqueta']
-                                            if want_seo and 'titulo_seo' in result:
-                                                row_out['titulo_seo'] = result['titulo_seo']
-                                            
-                                            results.append(row_out)
+                                        results.append(row_out)
                                     
                                     progress_bar.progress((idx + 1) / len(filtered_df))
                                 
@@ -940,4 +1008,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.caption("Generador de Títulos de Catálogo JCTituloGo- Cemaco © 2025")
+st.caption("Generador de Títulos de Catálogo - Cemaco © 2025")
