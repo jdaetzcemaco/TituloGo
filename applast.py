@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 from datetime import datetime
-import anthropic
+from anthropic import Anthropic
 import os
 
 # Page config
@@ -12,7 +12,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize session state
+# =========================
+#   Session State Init
+# =========================
 if 'nomenclature_df' not in st.session_state:
     st.session_state.nomenclature_df = None
 if 'transformation_memory' not in st.session_state:
@@ -22,8 +24,12 @@ if 'generated_titles' not in st.session_state:
 if 'api_key' not in st.session_state:
     st.session_state.api_key = ""
 
-# Helper function to load nomenclature
+# =========================
+#   Helper Functions
+# =========================
+
 def load_nomenclature(file):
+    """Load nomenclature CSV."""
     try:
         df = pd.read_csv(file, encoding='utf-8-sig')
         return df
@@ -31,90 +37,120 @@ def load_nomenclature(file):
         st.error(f"Error cargando nomenclatura: {e}")
         return None
 
-# Helper function to apply transformations consistently
 def apply_transformations(text, transformations):
-    """Apply saved transformations to maintain consistency"""
+    """Apply saved transformations to maintain consistency (not used directly now, but kept for future use)."""
     result = text
     for original, replacement in transformations.items():
         result = result.replace(original, replacement)
     return result
 
-# Function to generate titles using Claude
+# === Title post-processing helpers ===
+ACRONYMS_OK = {
+    "PVC", "CPVC", "AC", "DC", "LED", "RGB",
+    "IP", "UV", "USB", "HDMI",
+    "mm", "cm", "m", "plg"
+}
+
+def _cap_first(word: str) -> str:
+    return word[:1].upper() + word[1:].lower() if word else word
+
+def de_shout(text: str) -> str:
+    """
+    Turn ALL-CAPS words into Capitalized, but keep known acronyms as-is.
+    Example: 'VALVULA PVC 1/2 PLG' -> 'Valvula PVC 1/2 PLG'
+    """
+    tokens = []
+    for w in text.split():
+        # Remove basic punctuation to inspect the core word
+        stripped_left = w.lstrip(".,;:()[]{}-/")
+        stripped = stripped_left.rstrip(".,;:()[]{}-/")
+        bare = stripped
+
+        if len(bare) > 1 and bare.isupper() and bare not in ACRONYMS_OK:
+            prefix_len = len(w) - len(stripped_left)
+            suffix_len = len(stripped) - len(bare)
+            prefix = w[:prefix_len]
+            suffix = w[len(w) - suffix_len:] if suffix_len > 0 else ""
+            core = _cap_first(bare)
+            tokens.append(f"{prefix}{core}{suffix}")
+        else:
+            tokens.append(w)
+    return " ".join(tokens)
+
+def remove_brand_occurrences(text: str, brand: str) -> str:
+    """Remove brand mentions from a title if present (case-insensitive)."""
+    if not brand:
+        return text
+    if not text:
+        return text
+    # Simple case-insensitive replace
+    t = text
+    t = t.replace(brand, "")
+    t = t.replace(brand.upper(), "")
+    t = t.replace(brand.lower(), "")
+    # Also try capitalized form
+    t = t.replace(_cap_first(brand.lower()), "")
+    # Normalize spaces
+    return " ".join(t.split()).strip()
+
+# =========================
+#   Claude Title Generator
+# =========================
+
 def generate_titles(product_info, nomenclature_pattern, transformations):
-    """Generate 3 title variants using Claude API"""
+    """Generate title variants using Claude API with post-processing."""
     
     # Get API key from secrets or session state
     api_key = None
     try:
         if "ANTHROPIC_API_KEY" in st.secrets:
-            api_key = st.secrets["ANTHROPIC_API_KEY"]
-    except:
+            if st.secrets["ANTHROPIC_API_KEY"]:
+                api_key = st.secrets["ANTHROPIC_API_KEY"]
+    except Exception:
         pass
     
     if not api_key and 'api_key' in st.session_state:
-        api_key = st.session_state.api_key
+        if st.session_state.api_key:
+            api_key = st.session_state.api_key
     
     if not api_key:
         st.error("❌ API key no configurada")
         return None
     
-    client = anthropic.Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key)
     
-    prompt = f"""Eres un experto en crear títulos de productos para catálogos de retail en Guatemala.
+    prompt = f"""Eres experto en crear títulos de productos para catálogos de retail en Guatemala.
 
-INFORMACIÓN DEL PRODUCTO:
+INFORMACIÓN DEL PRODUCTO (útil para contexto, pero con reglas de exclusión):
 {json.dumps(product_info, indent=2, ensure_ascii=False)}
 
 PATRÓN DE NOMENCLATURA A SEGUIR:
 {nomenclature_pattern}
 
-TRANSFORMACIONES DISPONIBLES (Usa solo si es necesario para cumplir límites):
+TRANSFORMACIONES CONSISTENTES A APLICAR:
 {json.dumps(transformations, indent=2, ensure_ascii=False)}
 
-INSTRUCCIONES CRÍTICAS:
+REGLAS CLAVE (OBLIGATORIAS):
+- NUNCA incluyas la marca en ningún título, aunque venga en los datos.
+- Evita nombres de taxonomía como departamento/familia/categoría en el título SEO; solo inclúyelos si son críticos para desambiguar entre productos muy distintos.
+- Usa español de Guatemala.
+- No uses símbolos como ® o ™.
+- Usa abreviaciones estándar (plg, mm, cm, etc.) y respeta mayúsculas de acrónimos (PVC, CPVC, AC, DC, LED, mm, cm, plg).
+- Si recibes palabras en MAYÚSCULAS, conviértelas a Capitalizado (primera letra mayúscula y resto minúsculas), salvo acrónimos.
+- Límites:
+  a) TÍTULO SISTEMA (40 caracteres máx):
+     - Conciso, claro, sin marca
+     - Sigue el patrón de nomenclatura exactamente
+  b) TÍTULO ETIQUETA (36 caracteres máx):
+     - Si el título sistema cabe en 36 caracteres, reutilízalo
+     - Si no, crea una versión más corta manteniendo lo crítico
+  c) TÍTULO SEO:
+     - Más descriptivo, optimizado para búsqueda en cemaco.com
+     - Incluye palabras clave relevantes del producto
+     - Sin taxonomía salvo que desambiguar sea necesario
+     - Idealmente entre 50 y 70 caracteres
 
-1. Genera 3 variantes de título siguiendo estas reglas:
-   
-   a) TÍTULO SISTEMA (40 caracteres máximo):
-      - PRIORIDAD: Claridad y legibilidad
-      - Usa forma completa de palabras SI CABE en 40 caracteres
-      - Aplica transformaciones SOLO si necesitas acortar para cumplir el límite
-      - Ejemplo: Si "Cemento Blanco 50kg" cabe en 40 chars → usa "Blanco" completo
-      - Ejemplo: Si "Fibra de Vidrio Blanco 15x93x3.5" excede → usa "Bco"
-      - Sigue el patrón de nomenclatura exactamente
-      - Sin símbolos innecesarios
-   
-   b) TÍTULO ETIQUETA (36 caracteres máximo):
-      - Si el título sistema cabe en 36 caracteres → usa el mismo (sin cambios)
-      - Si NO cabe:
-        * Primero intenta acortar manteniendo palabras completas
-        * Si aún no cabe, ENTONCES aplica transformaciones necesarias
-        * Prioriza legibilidad sobre brevedad cuando sea posible
-      - Mantén la información más crítica
-   
-   c) TÍTULO SEO (para e-commerce):
-      - Más descriptivo, optimizado para búsqueda en cemaco.com
-      - Usa SIEMPRE formas completas (nunca abrevies aquí)
-      - Incluye palabras clave relevantes en español
-      - Puede incluir marca si aplica
-      - Entre 50-70 caracteres idealmente
-
-2. LÓGICA DE TRANSFORMACIONES:
-   - Las transformaciones son una HERRAMIENTA, no una regla obligatoria
-   - Úsalas estratégicamente para cumplir límites
-   - Prefiere palabras completas cuando hay espacio
-   - Aplica transformaciones progresivamente (empieza con palabras menos importantes)
-   
-3. CRITERIO DE DECISIÓN:
-   - ¿Cabe completo? → Déjalo completo
-   - ¿Excede por 1-3 caracteres? → Acorta palabras largas primero
-   - ¿Excede por 4+ caracteres? → Aplica transformaciones necesarias
-   
-4. Mantén consistencia con abreviaciones guatemaltecas estándar
-5. NO uses símbolos como ® o ™
-6. Usa español de Guatemala
-
-RESPONDE SOLO CON UN JSON VÁLIDO en este formato exacto:
+RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
 {{
   "titulo_sistema": "...",
   "longitud_sistema": 40,
@@ -122,18 +158,14 @@ RESPONDE SOLO CON UN JSON VÁLIDO en este formato exacto:
   "longitud_etiqueta": 36,
   "titulo_seo": "...",
   "longitud_seo": 65,
-  "transformaciones_aplicadas": ["blanco→bco en etiqueta (límite)", "pulgadas→plg en ambos (límite)"],
-  "razon_transformaciones": "Sistema: cabía completo. Etiqueta: necesitaba 3 chars menos",
+  "transformaciones_aplicadas": [],
   "cumple_nomenclatura": true,
-  "notas": "Explicación breve si hay algo relevante"
-}}
-
-NO INCLUYAS NADA MÁS QUE EL JSON. NO uses bloques de código markdown.
-"""
+  "notas": ""
+}}"""
 
     try:
         message = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-3-5-sonnet-20241022",
             max_tokens=1000,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -143,12 +175,30 @@ NO INCLUYAS NADA MÁS QUE EL JSON. NO uses bloques de código markdown.
         response_text = response_text.replace("```json", "").replace("```", "").strip()
         
         result = json.loads(response_text)
+
+        # --- Post-processing: remove brand + de-shout titles ---
+        brand = ""
+        try:
+            brand = (product_info.get("marca") or "").strip()
+        except Exception:
+            brand = ""
+
+        for key in ["titulo_sistema", "titulo_etiqueta", "titulo_seo"]:
+            if key in result and isinstance(result[key], str):
+                t = result[key]
+                t = remove_brand_occurrences(t, brand)
+                t = de_shout(t)
+                result[key] = " ".join(t.split())  # tidy spaces
+
         return result
     except Exception as e:
         st.error(f"Error generando títulos: {e}")
         return None
 
-# Main UI
+# =========================
+#   MAIN UI
+# =========================
+
 st.title("📝 Generador de Títulos de Catálogo - Cemaco")
 st.markdown("### Sistema de nomenclatura con memoria de transformaciones")
 
@@ -161,17 +211,19 @@ with st.sidebar:
     try:
         if "ANTHROPIC_API_KEY" in st.secrets and st.secrets["ANTHROPIC_API_KEY"]:
             api_key_configured = True
-    except:
+    except Exception:
         pass
     
     if not api_key_configured:
         if 'api_key' not in st.session_state:
             st.session_state.api_key = ""
         
-        api_key_input = st.text_input("Anthropic API Key", 
-                                       value=st.session_state.api_key,
-                                       type="password",
-                                       help="Obtén tu API key en console.anthropic.com")
+        api_key_input = st.text_input(
+            "Anthropic API Key", 
+            value=st.session_state.api_key,
+            type="password",
+            help="Obtén tu API key en console.anthropic.com"
+        )
         if api_key_input:
             st.session_state.api_key = api_key_input
             api_key_configured = True
@@ -200,45 +252,6 @@ with st.sidebar:
     st.subheader("2. Memoria de Transformaciones")
     st.caption("Mantén consistencia en abreviaciones")
     
-    # Upload transformations file
-    uploaded_transformations = st.file_uploader(
-        "📤 Cargar Transformaciones Guardadas",
-        type=['json'],
-        key="upload_trans",
-        help="Sube un archivo JSON con transformaciones previamente guardadas"
-    )
-    
-    if uploaded_transformations:
-        try:
-            trans_data = json.load(uploaded_transformations)
-            st.session_state.transformation_memory = trans_data
-            st.success(f"✅ {len(trans_data)} transformaciones cargadas")
-        except Exception as e:
-            st.error(f"❌ Error al cargar transformaciones: {e}")
-    
-    # Load default transformations button
-    if st.button("🔄 Cargar Transformaciones Comunes", help="Carga un set de transformaciones típicas"):
-        default_transformations = {
-            "blanco": "bco",
-            "negro": "neg",
-            "gris": "grs",
-            "pulgadas": "plg",
-            "pulgada": "plg",
-            "centímetros": "cm",
-            "centimetros": "cm",
-            "metros": "m",
-            "kilogramos": "kg",
-            "gramos": "gr",
-            "litros": "L",
-            "mililitros": "ml",
-            "acero inoxidable": "acero inox",
-            "galvanizado": "galv",
-            "cromado": "crom"
-        }
-        st.session_state.transformation_memory.update(default_transformations)
-        st.success(f"✅ {len(default_transformations)} transformaciones comunes agregadas")
-        st.rerun()
-    
     # Add new transformation
     col1, col2 = st.columns(2)
     with col1:
@@ -250,12 +263,11 @@ with st.sidebar:
         if original and replacement:
             st.session_state.transformation_memory[original] = replacement
             st.success(f"Agregado: {original} → {replacement}")
-            st.rerun()
     
     # Display current transformations
     if st.session_state.transformation_memory:
         st.markdown("**Transformaciones Activas:**")
-        for orig, repl in st.session_state.transformation_memory.items():
+        for orig, repl in list(st.session_state.transformation_memory.items()):
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.text(f"{orig} → {repl}")
@@ -263,18 +275,6 @@ with st.sidebar:
                 if st.button("🗑️", key=f"del_{orig}"):
                     del st.session_state.transformation_memory[orig]
                     st.rerun()
-        
-        # Download transformations button
-        trans_json = json.dumps(st.session_state.transformation_memory, indent=2, ensure_ascii=False)
-        st.download_button(
-            label="📥 Descargar Transformaciones",
-            data=trans_json,
-            file_name=f"transformaciones_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json",
-            help="Guarda estas transformaciones para usarlas en el futuro"
-        )
-    else:
-        st.info("👆 Agrega transformaciones o carga un archivo guardado")
     
     st.markdown("---")
     
@@ -294,15 +294,20 @@ with st.sidebar:
 if st.session_state.nomenclature_df is None:
     st.info("👈 Por favor carga el archivo de nomenclatura en el panel lateral para comenzar.")
 else:
-    # Create tabs for different modes
-    tab1, tab2, tab3 = st.tabs(["🔨 Crear Título Individual", "✏️ Ya Tengo Título Sistema", "📦 Procesamiento por Lote"])
+    df = st.session_state.nomenclature_df
+
+    # Tabs
+    tab1, tab2, tab3 = st.tabs([
+        "🔨 Crear Título Individual",
+        "✏️ Ya Tengo Título Sistema",
+        "📦 Procesamiento por Lote"
+    ])
     
-    # TAB 1: Individual title creation
+    # -------------------------
+    # TAB 1: Individual title
+    # -------------------------
     with tab1:
         st.subheader("Crear Nuevo Título")
-        
-        # Selectors for hierarchy
-        df = st.session_state.nomenclature_df
         
         col1, col2, col3 = st.columns(3)
         
@@ -321,7 +326,6 @@ else:
             ]['Categoria'].unique())
             selected_categoria = st.selectbox("Categoría", options=categorias)
         
-        # Get nomenclature pattern for selection
         pattern_row = df[
             (df['Departamento'] == selected_dept) & 
             (df['Familia'] == selected_familia) & 
@@ -337,11 +341,9 @@ else:
             
             st.markdown("---")
             
-            # Input form for product attributes
             st.subheader("Información del Producto")
             
-            product_name = st.text_input("Nombre del Producto", 
-                                        help="Nombre base del producto")
+            product_name = st.text_input("Nombre del Producto", help="Nombre base del producto")
             
             col1, col2 = st.columns(2)
             with col1:
@@ -351,10 +353,9 @@ else:
             
             with col2:
                 color = st.text_input("Color", help="Ej: Blanco, Negro, Gris")
-                marca = st.text_input("Marca (opcional)", help="Solo si es relevante")
+                marca = st.text_input("Marca (no se usará en el título)", help="Solo para contexto interno")
                 otros = st.text_area("Otros atributos", help="Características adicionales")
             
-            # Generate button
             if st.button("🚀 Generar Títulos", type="primary", use_container_width=True):
                 if product_name or tipo:
                     with st.spinner("Generando títulos optimizados..."):
@@ -378,42 +379,45 @@ else:
                         )
                         
                         if result:
-                            # Display results
                             st.success("✅ Títulos Generados Exitosamente")
                             
                             col1, col2, col3 = st.columns(3)
                             
                             with col1:
                                 st.markdown("### 📋 Título Sistema")
-                                chars_sistema = len(result['titulo_sistema'])
+                                titulo_sistema = result.get('titulo_sistema', '')
+                                chars_sistema = len(titulo_sistema)
                                 color_sistema = "green" if chars_sistema <= 40 else "red"
-                                st.markdown(f"**{result['titulo_sistema']}**")
-                                st.markdown(f"<span style='color:{color_sistema}'>Longitud: {chars_sistema}/40</span>", 
-                                          unsafe_allow_html=True)
+                                st.markdown(f"**{titulo_sistema}**")
+                                st.markdown(
+                                    f"<span style='color:{color_sistema}'>Longitud: {chars_sistema}/40</span>",
+                                    unsafe_allow_html=True
+                                )
                             
                             with col2:
                                 st.markdown("### 🏷️ Título Etiqueta")
-                                chars_etiqueta = len(result['titulo_etiqueta'])
+                                titulo_etiqueta = result.get('titulo_etiqueta', '')
+                                chars_etiqueta = len(titulo_etiqueta)
                                 color_etiqueta = "green" if chars_etiqueta <= 36 else "red"
-                                st.markdown(f"**{result['titulo_etiqueta']}**")
-                                st.markdown(f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>", 
-                                          unsafe_allow_html=True)
+                                st.markdown(f"**{titulo_etiqueta}**")
+                                st.markdown(
+                                    f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>",
+                                    unsafe_allow_html=True
+                                )
                             
                             with col3:
                                 st.markdown("### 🌐 Título SEO")
-                                chars_seo = len(result['titulo_seo'])
-                                st.markdown(f"**{result['titulo_seo']}**")
+                                titulo_seo = result.get('titulo_seo', '')
+                                chars_seo = len(titulo_seo)
+                                st.markdown(f"**{titulo_seo}**")
                                 st.markdown(f"Longitud: {chars_seo} caracteres")
                             
-                            # Show transformations applied
                             if result.get('transformaciones_aplicadas'):
-                                st.info(f"**Transformaciones aplicadas:** {', '.join(result['transformaciones_aplicadas'])}")
+                                st.info(
+                                    f"**Transformaciones aplicadas:** "
+                                    f"{', '.join(result['transformaciones_aplicadas'])}"
+                                )
                             
-                            # Show reasoning for transformations
-                            if result.get('razon_transformaciones'):
-                                st.caption(f"💡 Razonamiento: {result['razon_transformaciones']}")
-                            
-                            # Save to history
                             result_with_meta = {
                                 **result,
                                 **product_info,
@@ -426,30 +430,41 @@ else:
                 else:
                     st.warning("⚠️ Ingresa al menos el nombre del producto o tipo")
     
-    # TAB 2: Already have system title - generate label and SEO only
+    # -------------------------
+    # TAB 2: Already have system title
+    # -------------------------
     with tab2:
         st.subheader("Ya Tengo el Título del Sistema")
-        st.markdown("Genera únicamente los títulos de **Etiqueta** y **SEO** a partir de un título sistema existente")
+        st.markdown(
+            "Genera únicamente los títulos de **Etiqueta** y **SEO** a partir de un título sistema existente "
+            "(sin marca y con corrección de mayúsculas)."
+        )
         
-        # Selectors for hierarchy
         col1, col2, col3 = st.columns(3)
         
         with col1:
             departamentos = sorted(df['Departamento'].unique())
-            selected_dept_existing = st.selectbox("Departamento", options=departamentos, key="dept_existing")
+            selected_dept_existing = st.selectbox(
+                "Departamento", options=departamentos, key="dept_existing"
+            )
         
         with col2:
-            familias = sorted(df[df['Departamento'] == selected_dept_existing]['Familia'].unique())
-            selected_familia_existing = st.selectbox("Familia", options=familias, key="familia_existing")
+            familias = sorted(
+                df[df['Departamento'] == selected_dept_existing]['Familia'].unique()
+            )
+            selected_familia_existing = st.selectbox(
+                "Familia", options=familias, key="familia_existing"
+            )
         
         with col3:
             categorias = sorted(df[
                 (df['Departamento'] == selected_dept_existing) & 
                 (df['Familia'] == selected_familia_existing)
             ]['Categoria'].unique())
-            selected_categoria_existing = st.selectbox("Categoría", options=categorias, key="categoria_existing")
+            selected_categoria_existing = st.selectbox(
+                "Categoría", options=categorias, key="categoria_existing"
+            )
         
-        # Get nomenclature pattern
         pattern_row = df[
             (df['Departamento'] == selected_dept_existing) & 
             (df['Familia'] == selected_familia_existing) & 
@@ -465,11 +480,10 @@ else:
             
             st.markdown("---")
             
-            # Input for existing system title
             existing_title = st.text_area(
                 "Título Sistema Existente",
                 help="Pega aquí el título del sistema que ya tienes (máx 40 caracteres)",
-                max_chars=50
+                max_chars=80
             )
             
             if existing_title:
@@ -479,15 +493,20 @@ else:
                 else:
                     st.success(f"✅ Longitud: {chars_existing}/40 caracteres")
             
-            # Generate button
-            if st.button("🚀 Generar Etiqueta y SEO", type="primary", use_container_width=True, key="gen_existing"):
+            if st.button(
+                "🚀 Generar Etiqueta y SEO",
+                type="primary",
+                use_container_width=True,
+                key="gen_existing"
+            ):
                 if existing_title:
                     with st.spinner("Generando títulos de etiqueta y SEO..."):
                         product_info = {
                             "titulo_sistema_existente": existing_title,
                             "departamento": selected_dept_existing,
                             "familia": selected_familia_existing,
-                            "categoria": selected_categoria_existing
+                            "categoria": selected_categoria_existing,
+                            "marca": ""  # nunca usamos marca en títulos
                         }
                         
                         result = generate_titles(
@@ -497,41 +516,44 @@ else:
                         )
                         
                         if result:
-                            # Display results
                             st.success("✅ Títulos Generados Exitosamente")
                             
                             col1, col2, col3 = st.columns(3)
                             
                             with col1:
                                 st.markdown("### 📋 Título Sistema (Original)")
-                                st.markdown(f"**{existing_title}**")
-                                st.markdown(f"Longitud: {len(existing_title)}/40")
+                                cleaned_existing = de_shout(
+                                    remove_brand_occurrences(existing_title, "")
+                                )
+                                st.markdown(f"**{cleaned_existing}**")
+                                st.markdown(f"Longitud: {len(cleaned_existing)}/40")
                             
                             with col2:
                                 st.markdown("### 🏷️ Título Etiqueta")
-                                chars_etiqueta = len(result['titulo_etiqueta'])
+                                titulo_etiqueta = result.get('titulo_etiqueta', '')
+                                chars_etiqueta = len(titulo_etiqueta)
                                 color_etiqueta = "green" if chars_etiqueta <= 36 else "red"
-                                st.markdown(f"**{result['titulo_etiqueta']}**")
-                                st.markdown(f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>", 
-                                          unsafe_allow_html=True)
+                                st.markdown(f"**{titulo_etiqueta}**")
+                                st.markdown(
+                                    f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>",
+                                    unsafe_allow_html=True
+                                )
                             
                             with col3:
                                 st.markdown("### 🌐 Título SEO")
-                                chars_seo = len(result['titulo_seo'])
-                                st.markdown(f"**{result['titulo_seo']}**")
+                                titulo_seo = result.get('titulo_seo', '')
+                                chars_seo = len(titulo_seo)
+                                st.markdown(f"**{titulo_seo}**")
                                 st.markdown(f"Longitud: {chars_seo} caracteres")
                             
-                            # Show transformations applied
                             if result.get('transformaciones_aplicadas'):
-                                st.info(f"**Transformaciones aplicadas:** {', '.join(result['transformaciones_aplicadas'])}")
+                                st.info(
+                                    f"**Transformaciones aplicadas:** "
+                                    f"{', '.join(result['transformaciones_aplicadas'])}"
+                                )
                             
-                            # Show reasoning for transformations
-                            if result.get('razon_transformaciones'):
-                                st.caption(f"💡 Razonamiento: {result['razon_transformaciones']}")
-                            
-                            # Save to history
                             result_with_meta = {
-                                "titulo_sistema": existing_title,
+                                "titulo_sistema_original": cleaned_existing,
                                 **result,
                                 "departamento": selected_dept_existing,
                                 "familia": selected_familia_existing,
@@ -544,17 +566,33 @@ else:
                                 st.caption(f"📝 {result['notas']}")
                 else:
                     st.warning("⚠️ Por favor ingresa un título sistema")
-    
+
+    # -------------------------
     # TAB 3: Batch processing
+    # -------------------------
     with tab3:
         st.subheader("Procesamiento por Lote")
-        st.markdown("Dos modos: **Simplificado** (solo títulos) o **Completo** (con categorías por fila)")
-        
-        # Mode selection
+        st.markdown(
+            "Dos modos: **Simplificado** (una categoría para todos) "
+            "o **Completo** (cada fila trae su categoría)."
+        )
+
+        # Choose which titles to generate
+        generate_opts = st.multiselect(
+            "¿Qué tipos de título quieres generar en el lote?",
+            options=["Sistema", "Etiqueta", "SEO"],
+            default=["Etiqueta", "SEO"],
+            help="Elige uno, dos o los tres tipos."
+        )
+        want_sistema = "Sistema" in generate_opts
+        want_etiqueta = "Etiqueta" in generate_opts
+        want_seo = "SEO" in generate_opts
+
         mode = st.radio(
             "Modo de Procesamiento:",
             ["🎯 Simplificado - Una categoría para todos", "📋 Completo - Categorías individuales"],
-            help="Simplificado: todos los títulos usan la misma categoría. Completo: cada título tiene su propia categoría en el CSV"
+            help="Simplificado: todos los títulos usan la misma categoría. "
+                 "Completo: cada título tiene su propia categoría en el CSV"
         )
         
         st.markdown("---")
@@ -567,20 +605,27 @@ else:
             
             with col1:
                 departamentos_simple = sorted(df['Departamento'].unique())
-                selected_dept_simple = st.selectbox("Departamento", options=departamentos_simple, key="dept_simple")
+                selected_dept_simple = st.selectbox(
+                    "Departamento", options=departamentos_simple, key="dept_simple"
+                )
             
             with col2:
-                familias_simple = sorted(df[df['Departamento'] == selected_dept_simple]['Familia'].unique())
-                selected_familia_simple = st.selectbox("Familia", options=familias_simple, key="familia_simple")
+                familias_simple = sorted(
+                    df[df['Departamento'] == selected_dept_simple]['Familia'].unique()
+                )
+                selected_familia_simple = st.selectbox(
+                    "Familia", options=familias_simple, key="familia_simple"
+                )
             
             with col3:
                 categorias_simple = sorted(df[
                     (df['Departamento'] == selected_dept_simple) & 
                     (df['Familia'] == selected_familia_simple)
                 ]['Categoria'].unique())
-                selected_categoria_simple = st.selectbox("Categoría", options=categorias_simple, key="categoria_simple")
+                selected_categoria_simple = st.selectbox(
+                    "Categoría", options=categorias_simple, key="categoria_simple"
+                )
             
-            # Get nomenclature pattern
             pattern_row = df[
                 (df['Departamento'] == selected_dept_simple) & 
                 (df['Familia'] == selected_familia_simple) & 
@@ -596,7 +641,7 @@ else:
             
             st.markdown("---")
             st.markdown("### 2️⃣ Sube tu Archivo")
-            st.caption("CSV o Excel con una columna llamada 'titulo_sistema' o 'titulos'")
+            st.caption("CSV o Excel con una columna llamada 'titulo_sistema' o similar")
             
             uploaded_simple = st.file_uploader(
                 "Archivo con títulos",
@@ -606,18 +651,19 @@ else:
             )
             
             if uploaded_simple:
-                # Read file based on extension
                 file_extension = uploaded_simple.name.split('.')[-1].lower()
                 
                 try:
                     if file_extension == 'csv':
                         simple_df = pd.read_csv(uploaded_simple, encoding='utf-8-sig')
-                    else:  # xlsx or xls
+                    else:
                         simple_df = pd.read_excel(uploaded_simple)
                     
-                    # Find the titles column (flexible naming)
                     title_col = None
-                    possible_names = ['titulo_sistema', 'titulos', 'titulo', 'títulos', 'título', 'title', 'titles']
+                    possible_names = [
+                        'titulo_sistema', 'titulos', 'titulo', 'títulos',
+                        'título', 'title', 'titles'
+                    ]
                     
                     for col in simple_df.columns:
                         if col.lower().strip() in possible_names:
@@ -625,17 +671,25 @@ else:
                             break
                     
                     if title_col is None:
-                        st.error("❌ No se encontró una columna de títulos. Busqué: " + ", ".join(possible_names))
-                        st.info("**Columnas encontradas:** " + ", ".join(simple_df.columns.tolist()))
+                        st.error(
+                            "❌ No se encontró una columna de títulos. "
+                            "Busqué: " + ", ".join(possible_names)
+                        )
+                        st.info(
+                            "**Columnas encontradas:** " +
+                            ", ".join(simple_df.columns.tolist())
+                        )
                     else:
-                        # Show preview
                         st.success(f"✅ {len(simple_df)} títulos cargados desde columna '{title_col}'")
                         st.dataframe(simple_df[[title_col]].head(10))
                         if len(simple_df) > 10:
                             st.caption(f"Mostrando las primeras 10 de {len(simple_df)} filas")
                         
-                        # Process button
-                        if st.button("🚀 Procesar Todos", type="primary", key="process_simple"):
+                        if st.button(
+                            "🚀 Procesar Todos",
+                            type="primary",
+                            key="process_simple"
+                        ):
                             if not pattern_row.empty:
                                 progress_bar = st.progress(0)
                                 status_text = st.empty()
@@ -644,13 +698,17 @@ else:
                                 for idx, row in simple_df.iterrows():
                                     titulo = str(row[title_col]).strip()
                                     if titulo and titulo != 'nan':
-                                        status_text.text(f"Procesando {idx + 1} de {len(simple_df)}: {titulo[:40]}...")
+                                        status_text.text(
+                                            f"Procesando {idx + 1} de {len(simple_df)}: "
+                                            f"{titulo[:40]}..."
+                                        )
                                         
                                         product_info = {
                                             "titulo_sistema_existente": titulo,
                                             "departamento": selected_dept_simple,
                                             "familia": selected_familia_simple,
-                                            "categoria": selected_categoria_simple
+                                            "categoria": selected_categoria_simple,
+                                            "marca": ""
                                         }
                                         
                                         result = generate_titles(
@@ -660,14 +718,19 @@ else:
                                         )
                                         
                                         if result:
-                                            results.append({
+                                            row_out = {
                                                 'titulo_sistema_original': titulo,
-                                                'titulo_etiqueta': result['titulo_etiqueta'],
-                                                'titulo_seo': result['titulo_seo'],
                                                 'departamento': selected_dept_simple,
                                                 'familia': selected_familia_simple,
                                                 'categoria': selected_categoria_simple
-                                            })
+                                            }
+                                            if want_sistema and 'titulo_sistema' in result:
+                                                row_out['titulo_sistema_generado'] = result['titulo_sistema']
+                                            if want_etiqueta and 'titulo_etiqueta' in result:
+                                                row_out['titulo_etiqueta'] = result['titulo_etiqueta']
+                                            if want_seo and 'titulo_seo' in result:
+                                                row_out['titulo_seo'] = result['titulo_seo']
+                                            results.append(row_out)
                                     
                                     progress_bar.progress((idx + 1) / len(simple_df))
                                 
@@ -678,7 +741,6 @@ else:
                                     results_df = pd.DataFrame(results)
                                     st.dataframe(results_df)
                                     
-                                    # Download button
                                     csv = results_df.to_csv(index=False, encoding='utf-8-sig')
                                     st.download_button(
                                         label="📥 Descargar Resultados CSV",
@@ -692,11 +754,13 @@ else:
                 except Exception as e:
                     st.error(f"❌ Error al leer el archivo: {e}")
         
-        else:  # Modo completo (original)
+        else:
+            # ---------------------
+            # Modo completo
+            # ---------------------
             st.markdown("### 📋 Modo Completo")
             st.caption("Tu archivo debe incluir: titulo_sistema, departamento, familia, categoria")
             
-            # Add filters for batch processing
             st.markdown("### 🔍 Filtros (Opcional)")
             st.caption("Procesa solo productos de categorías específicas")
             
@@ -704,24 +768,32 @@ else:
             
             with col1:
                 departamentos_batch = ["Todos"] + sorted(df['Departamento'].unique().tolist())
-                selected_dept_batch = st.selectbox("Departamento", options=departamentos_batch, key="dept_batch")
+                selected_dept_batch = st.selectbox(
+                    "Departamento", options=departamentos_batch, key="dept_batch"
+                )
             
             with col2:
                 if selected_dept_batch != "Todos":
-                    familias_batch = ["Todos"] + sorted(df[df['Departamento'] == selected_dept_batch]['Familia'].unique().tolist())
+                    familias_batch = ["Todos"] + sorted(
+                        df[df['Departamento'] == selected_dept_batch]['Familia'].unique().tolist()
+                    )
                 else:
                     familias_batch = ["Todos"]
-                selected_familia_batch = st.selectbox("Familia", options=familias_batch, key="familia_batch")
+                selected_familia_batch = st.selectbox(
+                    "Familia", options=familias_batch, key="familia_batch"
+                )
             
             with col3:
                 if selected_dept_batch != "Todos" and selected_familia_batch != "Todos":
                     categorias_batch = ["Todos"] + sorted(df[
-                        (df['Departamento'] == selected_dept_batch) & 
+                        (df['Departamento'] == selected_dept_batch) &
                         (df['Familia'] == selected_familia_batch)
                     ]['Categoria'].unique().tolist())
                 else:
                     categorias_batch = ["Todos"]
-                selected_categoria_batch = st.selectbox("Categoría", options=categorias_batch, key="categoria_batch")
+                selected_categoria_batch = st.selectbox(
+                    "Categoría", options=categorias_batch, key="categoria_batch"
+                )
             
             with col4:
                 st.markdown("&nbsp;")
@@ -730,121 +802,141 @@ else:
             
             st.markdown("---")
         
-        uploaded_batch = st.file_uploader(
-            "Archivo CSV o Excel con títulos y categorías",
-            type=['csv', 'xlsx', 'xls'],
-            key="batch_upload",
-            help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria"
-        )
-        
-        if uploaded_batch:
-            # Read file based on extension
-            file_extension = uploaded_batch.name.split('.')[-1].lower()
+            uploaded_batch = st.file_uploader(
+                "Archivo CSV o Excel con títulos y categorías",
+                type=['csv', 'xlsx', 'xls'],
+                key="batch_upload",
+                help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria"
+            )
             
-            try:
-                if file_extension == 'csv':
-                    batch_df = pd.read_csv(uploaded_batch, encoding='utf-8-sig')
-                else:  # xlsx or xls
-                    batch_df = pd.read_excel(uploaded_batch)
+            if uploaded_batch:
+                file_extension = uploaded_batch.name.split('.')[-1].lower()
                 
-                # First, validate required columns
-                required_cols = ['titulo_sistema', 'departamento', 'familia', 'categoria']
-                missing_cols = [col for col in required_cols if col not in batch_df.columns]
-                
-                if missing_cols:
-                    st.error(f"❌ Faltan columnas requeridas: {', '.join(missing_cols)}")
-                    st.info("**Columnas encontradas:** " + ", ".join(batch_df.columns.tolist()))
-                    st.info("**Columnas requeridas:** " + ", ".join(required_cols))
-                else:
-                    # Now apply filters if columns exist
-                    filtered_df = batch_df.copy()
-                    filter_applied = False
-                    
-                    if selected_dept_batch != "Todos":
-                        filtered_df = filtered_df[filtered_df['departamento'] == selected_dept_batch]
-                        filter_applied = True
-                    
-                    if selected_familia_batch != "Todos":
-                        filtered_df = filtered_df[filtered_df['familia'] == selected_familia_batch]
-                        filter_applied = True
-                    
-                    if selected_categoria_batch != "Todos":
-                        filtered_df = filtered_df[filtered_df['categoria'] == selected_categoria_batch]
-                        filter_applied = True
-                    
-                    # Show filter results
-                    if filter_applied:
-                        st.info(f"🔍 Filtros aplicados: {len(filtered_df)} de {len(batch_df)} productos seleccionados")
-                    
-                    st.dataframe(filtered_df.head(10))
-                    if len(filtered_df) > 10:
-                        st.caption(f"Mostrando las primeras 10 filas de {len(filtered_df)} productos")
-                    
-                    # Process button only if columns are valid
-                    if len(filtered_df) == 0:
-                        st.warning("⚠️ No hay productos que coincidan con los filtros seleccionados")
+                try:
+                    if file_extension == 'csv':
+                        batch_df = pd.read_csv(uploaded_batch, encoding='utf-8-sig')
                     else:
-                        if st.button("🚀 Procesar Lote", type="primary"):
-                            progress_bar = st.progress(0)
-                            status_text = st.empty()
-                            results = []
-                            
-                            for idx, row in filtered_df.iterrows():
-                                status_text.text(f"Procesando {idx + 1} de {len(filtered_df)}...")
+                        batch_df = pd.read_excel(uploaded_batch)
+                    
+                    required_cols = ['titulo_sistema', 'departamento', 'familia', 'categoria']
+                    missing_cols = [col for col in required_cols if col not in batch_df.columns]
+                    
+                    if missing_cols:
+                        st.error(f"❌ Faltan columnas requeridas: {', '.join(missing_cols)}")
+                        st.info(
+                            "**Columnas encontradas:** " +
+                            ", ".join(batch_df.columns.tolist())
+                        )
+                        st.info("**Columnas requeridas:** " + ", ".join(required_cols))
+                    else:
+                        filtered_df = batch_df.copy()
+                        filter_applied = False
+                        
+                        if selected_dept_batch != "Todos":
+                            filtered_df = filtered_df[
+                                filtered_df['departamento'] == selected_dept_batch
+                            ]
+                            filter_applied = True
+                        
+                        if selected_familia_batch != "Todos":
+                            filtered_df = filtered_df[
+                                filtered_df['familia'] == selected_familia_batch
+                            ]
+                            filter_applied = True
+                        
+                        if selected_categoria_batch != "Todos":
+                            filtered_df = filtered_df[
+                                filtered_df['categoria'] == selected_categoria_batch
+                            ]
+                            filter_applied = True
+                        
+                        if filter_applied:
+                            st.info(
+                                f"🔍 Filtros aplicados: "
+                                f"{len(filtered_df)} de {len(batch_df)} productos seleccionados"
+                            )
+                        
+                        st.dataframe(filtered_df.head(10))
+                        if len(filtered_df) > 10:
+                            st.caption(
+                                f"Mostrando las primeras 10 filas de {len(filtered_df)} productos"
+                            )
+                        
+                        if len(filtered_df) == 0:
+                            st.warning(
+                                "⚠️ No hay productos que coincidan con los filtros seleccionados"
+                            )
+                        else:
+                            if st.button("🚀 Procesar Lote", type="primary"):
+                                progress_bar = st.progress(0)
+                                status_text = st.empty()
+                                results = []
                                 
-                                # Get nomenclature pattern
-                                pattern_row = df[
-                                    (df['Departamento'] == row['departamento']) & 
-                                    (df['Familia'] == row['familia']) & 
-                                    (df['Categoria'] == row['categoria'])
-                                ]
-                                
-                                if not pattern_row.empty:
-                                    nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
-                                    
-                                    product_info = {
-                                        "titulo_sistema_existente": row['titulo_sistema'],
-                                        "departamento": row['departamento'],
-                                        "familia": row['familia'],
-                                        "categoria": row['categoria']
-                                    }
-                                    
-                                    result = generate_titles(
-                                        product_info,
-                                        nomenclatura,
-                                        st.session_state.transformation_memory
+                                for idx, row in filtered_df.iterrows():
+                                    status_text.text(
+                                        f"Procesando {idx + 1} de {len(filtered_df)}..."
                                     )
                                     
-                                    if result:
-                                        results.append({
-                                            'titulo_sistema_original': row['titulo_sistema'],
-                                            'titulo_etiqueta': result['titulo_etiqueta'],
-                                            'titulo_seo': result['titulo_seo'],
-                                            'departamento': row['departamento'],
-                                            'familia': row['familia'],
-                                            'categoria': row['categoria']
-                                        })
+                                    pattern_row = df[
+                                        (df['Departamento'] == row['departamento']) & 
+                                        (df['Familia'] == row['familia']) & 
+                                        (df['Categoria'] == row['categoria'])
+                                    ]
+                                    
+                                    if not pattern_row.empty:
+                                        nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
+                                        
+                                        product_info = {
+                                            "titulo_sistema_existente": row['titulo_sistema'],
+                                            "departamento": row['departamento'],
+                                            "familia": row['familia'],
+                                            "categoria": row['categoria'],
+                                            "marca": ""
+                                        }
+                                        
+                                        result = generate_titles(
+                                            product_info,
+                                            nomenclatura,
+                                            st.session_state.transformation_memory
+                                        )
+                                        
+                                        if result:
+                                            row_out = {
+                                                'titulo_sistema_original': row['titulo_sistema'],
+                                                'departamento': row['departamento'],
+                                                'familia': row['familia'],
+                                                'categoria': row['categoria']
+                                            }
+                                            if want_sistema and 'titulo_sistema' in result:
+                                                row_out['titulo_sistema_generado'] = result['titulo_sistema']
+                                            if want_etiqueta and 'titulo_etiqueta' in result:
+                                                row_out['titulo_etiqueta'] = result['titulo_etiqueta']
+                                            if want_seo and 'titulo_seo' in result:
+                                                row_out['titulo_seo'] = result['titulo_seo']
+                                            
+                                            results.append(row_out)
+                                    
+                                    progress_bar.progress((idx + 1) / len(filtered_df))
                                 
-                                progress_bar.progress((idx + 1) / len(filtered_df))
-                            
-                            status_text.empty()
-                            
-                            if results:
-                                st.success(f"✅ Procesados {len(results)} títulos")
-                                results_df = pd.DataFrame(results)
-                                st.dataframe(results_df)
+                                status_text.empty()
                                 
-                                # Download button
-                                csv = results_df.to_csv(index=False, encoding='utf-8-sig')
-                                st.download_button(
-                                    label="📥 Descargar Resultados",
-                                    data=csv,
-                                    file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                                    mime="text/csv"
-                                )
+                                if results:
+                                    st.success(f"✅ Procesados {len(results)} títulos")
+                                    results_df = pd.DataFrame(results)
+                                    st.dataframe(results_df)
+                                    
+                                    csv = results_df.to_csv(index=False, encoding='utf-8-sig')
+                                    st.download_button(
+                                        label="📥 Descargar Resultados",
+                                        data=csv,
+                                        file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                                        mime="text/csv"
+                                    )
+                                else:
+                                    st.warning("⚠️ No se generaron resultados")
                 
-            except Exception as e:
-                st.error(f"❌ Error al leer el archivo: {e}")
+                except Exception as e:
+                    st.error(f"❌ Error al leer el archivo: {e}")
 
 # Footer
 st.markdown("---")

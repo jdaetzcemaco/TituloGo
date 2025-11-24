@@ -940,4 +940,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.caption("Generador de Títulos de Catálogo - Cemaco © 2025")
+st.caption("Generador de Títulos de Catálogo JCTituloGo- Cemaco © 2025")
