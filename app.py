@@ -213,6 +213,12 @@ REGLAS CLAVE (OBLIGATORIAS):
 - No uses símbolos como ® o ™.
 - Usa abreviaciones estándar (plg, mm, cm, etc.) y respeta mayúsculas de acrónimos (PVC, CPVC, AC, DC, LED, mm, cm, plg).
 - Si recibes palabras en MAYÚSCULAS, conviértelas a Capitalizado (primera letra mayúscula y resto minúsculas), salvo acrónimos.
+- No termines los títulos con frases genéricas como “para plomería”, “para tubería”, 
+  “para ferretería”, “para construcción”, “para el hogar” u otras similares.
+- Usa “para…” únicamente cuando aporte un uso específico del producto 
+  (ej: “para agua fría”, “para gas”, “para exterior”, “para conducción eléctrica”, 
+  “para drenaje”, “para ducha”, “para piso”, etc.).
+- Si el uso ya es evidente por el tipo de producto o categoría, NO lo repitas en el título.
 - Límites:
   a) TÍTULO SISTEMA (40 caracteres máx):
      - Conciso, claro, sin marca
@@ -247,12 +253,11 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
         )
         
         response_text = message.content[0].text.strip()
-        # Remove markdown code blocks if present
         response_text = response_text.replace("```json", "").replace("```", "").strip()
         
         result = json.loads(response_text)
 
-        # --- Post-processing: remove brand + de-shout titles ---
+        # --- Post-processing: remove brand + de-shout + memory + remove para plomería ---
         brand = ""
         try:
             brand = (product_info.get("marca") or "").strip()
@@ -262,18 +267,55 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
         for key in ["titulo_sistema", "titulo_etiqueta", "titulo_seo"]:
             if key in result and isinstance(result[key], str):
                 t = result[key]
-        # 1) aplica memoria de transformaciones (pulgada -> plg)
-        t = apply_transformations(t, transformations)
-        # 2) quita marca por si se coló
-        t = remove_brand_occurrences(t, brand)
-        # 3) corrige mayúsculas
-        t = de_shout(t)
-        result[key] = " ".join(t.split())  # tidy spaces
+
+                # 1) Memoria de transformaciones
+                t = apply_transformations(t, transformations)
+
+                # 2) Quita marca
+                t = remove_brand_occurrences(t, brand)
+
+                # 3) Mayúsculas correctas
+                t = de_shout(t)
+
+                # 4) Quita finales genéricos ("para plomería", "para tubería", etc.)
+                t = remove_generic_para_phrases(t)
+
+                # 5) Normaliza espacios
+                result[key] = " ".join(t.split())
 
         return result
+
     except Exception as e:
         st.error(f"Error generando títulos: {e}")
         return None
+
+GENERIC_PARA_PATTERNS = [
+    r"\s*para\s+plomer[ií]a$",
+    r"\s*para\s+tuber[ií]a$",
+    r"\s*para\s+ferreter[ií]a$",
+    r"\s*para\s+construcci[oó]n$",
+    r"\s*para\s+el\s+hogar$",
+    r"\s*para\s+hogar$",
+]
+
+def remove_generic_para_phrases(text: str) -> str:
+    """
+    Elimina finales genéricos del tipo:
+    - para plomería
+    - para tubería
+    - para ferretería
+    - para construcción
+    - para el hogar
+    No toca usos específicos como:
+    - para agua fría, para gas, para exterior, etc.
+    """
+    if not text:
+        return text
+    out = str(text)
+    for pattern in GENERIC_PARA_PATTERNS:
+        out = re.sub(pattern, "", out, flags=re.IGNORECASE)
+    # limpia espacios dobles / sobrantes
+    return " ".join(out.split())
 
 # =========================
 #   MAIN UI
