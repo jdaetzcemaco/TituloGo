@@ -39,11 +39,27 @@ def load_nomenclature(file):
         return None
 
 def apply_transformations(text, transformations):
-    """Apply saved transformations to maintain consistency (not used directly now, but kept for future use)."""
-    result = text
+    """
+    Aplica transformaciones de manera:
+    - insensible a mayúsculas/minúsculas
+    - soportando singular/plural sencillo (pulgada/pulgadas)
+    """
+    if not text:
+        return text
+
+    out = text
     for original, replacement in transformations.items():
-        result = result.replace(original, replacement)
-    return result
+        # palabra base normalizada
+        base = original.strip()
+        if not base:
+            continue
+
+        # regex: palabra + s opcional, con límites de palabra
+        pattern = re.compile(rf"\b{re.escape(base)}(s)?\b", re.IGNORECASE)
+        out = pattern.sub(replacement, out)
+
+    # limpia espacios dobles
+    return " ".join(out.split())
 
 # === Title post-processing helpers ===
 ACRONYMS_OK = {
@@ -246,9 +262,13 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
         for key in ["titulo_sistema", "titulo_etiqueta", "titulo_seo"]:
             if key in result and isinstance(result[key], str):
                 t = result[key]
-                t = remove_brand_occurrences(t, brand)
-                t = de_shout(t)
-                result[key] = " ".join(t.split())  # tidy spaces
+        # 1) aplica memoria de transformaciones (pulgada -> plg)
+        t = apply_transformations(t, transformations)
+        # 2) quita marca por si se coló
+        t = remove_brand_occurrences(t, brand)
+        # 3) corrige mayúsculas
+        t = de_shout(t)
+        result[key] = " ".join(t.split())  # tidy spaces
 
         return result
     except Exception as e:
