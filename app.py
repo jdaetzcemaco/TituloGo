@@ -5,6 +5,7 @@ from datetime import datetime
 from anthropic import Anthropic
 import os
 import re
+import time
 
 # Page config
 st.set_page_config(
@@ -24,6 +25,13 @@ if 'generated_titles' not in st.session_state:
     st.session_state.generated_titles = []
 if 'api_key' not in st.session_state:
     st.session_state.api_key = ""
+if 'validation_stats' not in st.session_state:
+    st.session_state.validation_stats = {
+        'total_processed': 0,
+        'validation_passed': 0,
+        'validation_corrected': 0,
+        'validation_failed': 0
+    }
 
 # =========================
 #   Helper Functions
@@ -107,6 +115,7 @@ def remove_brand_occurrences(text: str, brand: str) -> str:
     t = t.replace(_cap_first(brand.lower()), "")
 
     return " ".join(t.split()).strip()
+
 FORBIDDEN_TECH_TERMS = [
     "penetrante",
     "hidráulico", "hidraulico",
@@ -252,192 +261,371 @@ def normalize_units_semi_technical(text: str) -> str:
 
 
 # =========================
-#   Claude Title Generator
+#   VALIDATION HELPERS
 # =========================
 
-def generate_titles(product_info, nomenclature_pattern, transformations):
-    """Genera títulos usando Claude + post-procesamiento estándar Cemaco."""
+def quick_validation_rules(original_title: str, generated_title: str) -> list:
+    """
+    Fast rule-based validation before AI validator.
+    Returns list of issues found.
+    """
+    issues = []
+    
+    if not original_title or not generated_title:
+        return issues
+    
+    # Rule 1: Check for problematic "para X" additions
+    # These are generic phrases that shouldn't be added unless in original
+    problematic_para = [
+        'para agua sucia', 'para agua limpia',
+        'para sellado de roscas', 'para sellado',
+        'para drenajes y tuberías', 'para drenajes',
+        'para construcción', 'para plomería',
+        'para tubería', 'para ferretería'
+    ]
+    
+    for phrase in problematic_para:
+        if phrase in generated_title.lower():
+            # Check if it's in original (accounting for abbreviations)
+            orig_upper = original_title.upper()
+            # Check common abbreviations
+            abbrev_map = {
+                'para agua sucia': ['A.SUCIA', 'A SUCIA'],
+                'para agua limpia': ['A.LIMP', 'A LIMP'],
+                'para sellado': ['P/SELLADO', 'P SELLADO'],
+            }
+            
+            found_in_original = False
+            if phrase in original_title.lower():
+                found_in_original = True
+            elif phrase in abbrev_map:
+                for abbrev in abbrev_map[phrase]:
+                    if abbrev in orig_upper:
+                        # If abbreviated, we should convert but NOT add "para"
+                        issues.append(f"Incorrectly added 'para' with abbreviation: '{phrase}' (original has '{abbrev}')")
+                        found_in_original = True
+                        break
+            
+            if not found_in_original:
+                issues.append(f"Added generic phrase not in original: '{phrase}'")
+    
+    # Rule 2: Check for invented technical terms
+    for term in FORBIDDEN_TECH_TERMS:
+        if term.lower() in generated_title.lower() and term.lower() not in original_title.lower():
+            issues.append(f"Invented technical term: '{term}'")
+    
+    # Rule 3: Check critical measurements are preserved
+    measurements = re.findall(r'\d+(?:/\d+)?(?:\s*(?:mm|cm|m|plg|pulgada|Hp|HP|L/min|W))', original_title)
+    for measure in measurements:
+        # Normalize for comparison
+        measure_normalized = measure.replace('Hp', 'HP').replace('hp', 'HP')
+        gen_normalized = generated_title.replace('Hp', 'HP').replace('hp', 'HP')
+        
+        if measure_normalized not in gen_normalized:
+            issues.append(f"Missing critical measurement: '{measure}'")
+    
+    return issues
 
-    # API key
-    api_key = None
+
+def validate_with_agent(original_title: str, generated_title: str, api_key: str) -> dict:
+    """
+    Second AI agent that validates and corrects the first agent's output.
+    Returns: dict with validation results
+    """
+    
+    validation_prompt = f"""Eres un agente de control de calidad. Tu trabajo es validar y corregir títulos de productos generados por otro sistema.
+
+TÍTULO ORIGINAL DEL ERP: {original_title}
+TÍTULO GENERADO: {generated_title}
+
+REGLAS ESTRICTAS DE VALIDACIÓN:
+
+1. REGLA CRÍTICA - Conversión de abreviaciones vs "para":
+   - Si el original dice "A.SUCIA" o "A SUCIA" → convertir a "Agua Sucia" (SIN agregar "para")
+   - Si el original dice "A.LIMP" o "A LIMP" → convertir a "Agua Limpia" (SIN agregar "para")
+   - Si el original dice "P/" → convertir a "para"
+   - Si el original dice "C/" → convertir a "con"
+   - NUNCA agregues "para" antes de una abreviación convertida a menos que el original tenga "P/"
+
+2. REGLA CRÍTICA - Frases genéricas:
+   - NUNCA agregues "para sellado de roscas" a menos que esté explícito en el original
+   - NUNCA agregues "para drenajes y tuberías" a menos que esté explícito
+   - NUNCA agregues contexto genérico que no esté en el original
+
+3. Especificaciones técnicas:
+   - TODA especificación en el título generado debe existir en el original
+   - NO inventes características técnicas
+   - Mantén medidas exactas (HP, plg, mm, cm, m, L/min)
+
+4. Frases "para X" solo si:
+   - Están explícitas en el original, O
+   - Son conversión directa de "P/" en el original
+
+EJEMPLOS DE ERRORES COMUNES A CORREGIR:
+
+❌ MAL:
+Original: "BOMBA SUM A.SUCIA 1 1/2HP"
+Generado: "Bomba Sumergible para Agua Sucia 1 1/2 HP"
+Problema: Agregó "para" cuando el original solo tiene "A.SUCIA"
+
+✅ BIEN:
+Original: "BOMBA SUM A.SUCIA 1 1/2HP"
+Corregido: "Bomba Sumergible Agua Sucia 1 1/2 HP"
+
+❌ MAL:
+Original: "CINTA TEFLON 1/2X7M"
+Generado: "Cinta de Teflón 1/2 plg x 7 m para sellado de roscas"
+Problema: Agregó "para sellado de roscas" que no está en original
+
+✅ BIEN:
+Original: "CINTA TEFLON 1/2X7M"
+Corregido: "Cinta de Teflón 1/2 plg x 7 m"
+
+ANALIZA:
+1. Compara palabra por palabra el título generado vs original
+2. Identifica cada adición que no esté en el original
+3. Para cada adición pregunta: ¿Es técnicamente necesaria o es fluff genérico?
+4. Corrige removiendo frases genéricas innecesarias
+
+RESPONDE SOLO CON JSON VÁLIDO:
+{{
+    "is_valid": true/false,
+    "corrected_title": "versión corregida del título",
+    "issues_found": ["lista de problemas encontrados"],
+    "removed_phrases": ["frases genéricas removidas"],
+    "confidence": "high/medium/low"
+}}"""
+
     try:
-        if "ANTHROPIC_API_KEY" in st.secrets:
-            if st.secrets["ANTHROPIC_API_KEY"]:
-                api_key = st.secrets["ANTHROPIC_API_KEY"]
-    except Exception:
-        pass
+        client = Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=800,
+            messages=[{"role": "user", "content": validation_prompt}]
+        )
+        
+        response_text = response.content[0].text.strip()
+        response_text = response_text.replace("```json", "").replace("```", "").strip()
+        
+        result = json.loads(response_text)
+        return result
+        
+    except Exception as e:
+        return {
+            "is_valid": False,
+            "corrected_title": generated_title,
+            "issues_found": [f"Validation error: {str(e)}"],
+            "removed_phrases": [],
+            "confidence": "low"
+        }
 
-    if not api_key and 'api_key' in st.session_state:
-        if st.session_state.api_key:
-            api_key = st.session_state.api_key
 
-    if not api_key:
-        st.error("❌ API key no configurada")
-        return None
+# =========================
+#   BATCH PROCESSING
+# =========================
 
-    client = Anthropic(api_key=api_key)
+def process_batch_with_validation(
+    products_batch: list,
+    nomenclature_pattern: str,
+    transformations: dict,
+    api_key: str,
+    enable_ai_validation: bool = True
+) -> list:
+    """
+    Process a batch of products (up to 50) in a single API call.
+    Then validate each result.
+    
+    Returns: list of results with validation metadata
+    """
+    
+    if not products_batch:
+        return []
+    
+    # Build batch prompt
+    products_json = []
+    for p in products_batch:
+        products_json.append({
+            "titulo": p["titulo_sistema_existente"],
+            "departamento": p["departamento"],
+            "familia": p["familia"],
+            "categoria": p["categoria"]
+        })
+    
+    batch_prompt = f"""Eres experto en crear títulos de productos para catálogos de retail en Guatemala.
 
-    prompt = f"""Eres experto en crear títulos de productos para catálogos de retail en Guatemala.
-
-INFORMACIÓN DEL PRODUCTO (útil para contexto, pero con reglas de exclusión):
-{json.dumps(product_info, indent=2, ensure_ascii=False)}
+Vas a procesar {len(products_batch)} productos siguiendo el MISMO patrón de nomenclatura.
 
 PATRÓN DE NOMENCLATURA A SEGUIR:
 {nomenclature_pattern}
 
-TRANSFORMACIONES CONSISTENTES A APLICAR:
+TRANSFORMACIONES CONSISTENTES:
 {json.dumps(transformations, indent=2, ensure_ascii=False)}
 
-REGLAS UNIVERSALES (OBLIGATORIAS):
-- NUNCA incluyas la marca en ningún título, aunque venga en los datos.
-- Evita nombres de taxonomía como departamento/familia/categoría en el título SEO;
-  solo inclúyelos si son críticos para desambiguar entre productos muy distintos.
-- Usa español de Guatemala.
-- No uses símbolos como ® o ™.
-- Usa abreviaciones estándar (plg, mm, cm, m, L/min, HP, W, V) y respeta mayúsculas de acrónimos
-  (PVC, CPVC, AC, DC, LED, mm, cm, m, plg).
-- Si recibes palabras en MAYÚSCULAS, conviértelas a Capitalizado (primera letra mayúscula y resto minúsculas),
-  salvo acrónimos.
-- No termines los títulos con frases genéricas como “para plomería”, “para tubería”,
-  “para ferretería”, “para construcción”, “para el hogar” u otras similares.
-  - NO inventes características técnicas que no estén en el título original ni sean obvias por el tipo de producto.
-  No agregues términos como “penetrante”, “hidráulico”, “neumático”, “amortiguador”, 
-  “epóxico”, “dieléctrico” u otros similares a menos que vengan explícitos en los datos.
-- No infieras mecanismos internos ni especificaciones avanzadas (hidráulico, neumático, resorte,
-  amortiguador, dieléctrico, etc.) si el ERP no lo menciona.
-- Mantén un español natural, usando preposiciones cuando correspondan 
-  (a, ante, bajo, con, contra, de, desde, durante, en, entre, hacia, hasta, mediante, 
-   para, por, según, sin, sobre, tras). No generes títulos “telegrafiados” donde desaparecen estas palabras.
-- Usa “para…” únicamente cuando aporte un uso específico del producto
-  (ej: “para agua fría”, “para gas”, “para exterior”, “para conducción eléctrica”,
-  “para drenaje”, “para ducha”, “para piso”, etc.).
-- Si el uso ya es evidente por el tipo de producto o categoría, NO lo repitas en el título.
-- No inventes características técnicas ni usos que no aparezcan explícitamente en la información del producto.
-- El título debe ser claro para un cliente retail general (semi-técnico), no para ingenieros.
+REGLAS CRÍTICAS (OBLIGATORIAS):
 
-ESTÁNDAR SEMI-TÉCNICO CEMACO POR TIPO DE PRODUCTO:
+1. ABREVIACIONES - NO agregues "para":
+   - A.SUCIA / A SUCIA → "Agua Sucia" (NO "para Agua Sucia")
+   - A.LIMP / A LIMP → "Agua Limpia" (NO "para Agua Limpia")
+   - Solo usa "para" si el original tiene "P/" explícitamente
 
-1) BOMBAS DE AGUA (periféricas, centrífugas, sumergibles, con tanque, jet, acero inoxidable)
-- Formato cuando existan esos datos:
-  Tipo + Potencia (HP) + Altura (m) + Caudal (L/min) + Capacidad de tanque (si aplica)
-- Ejemplos:
-  "Bomba Periférica 1/2 HP 30 m 40 L/min"
-  "Bomba Centrífuga 1 HP 45 m 53 L/min"
-  "Bomba Sumergible 1 HP 33 m 117 L/min"
-  "Bomba con Tanque 1/2 HP 28 m 43 L/min Tanque 50 L"
-- Usa SIEMPRE "m" (no "metros") y "L/min" (no "Litros por Minuto").
-- Usa SIEMPRE "HP" en mayúsculas.
-- No agregues "caudal de agua", "altura máxima", "uso doméstico" si no están explícitos.
+2. NUNCA agregues frases genéricas:
+   - ❌ "para sellado de roscas"
+   - ❌ "para drenajes y tuberías"
+   - ❌ "para construcción"
+   Solo agrega "para X" si:
+   - Es conversión de "P/" en el original, O
+   - El uso es específico (para gas, para agua fría, para exterior)
 
-2) ROTOMARTILLOS, TALADROS PERCUTOR, TALADROS
-- No inventes funciones como "Percusión y Rotación" si no están en los datos.
-- Potencia (W, V, HP) solo si aparece.
-- Formato sugerido:
-  Tipo + Medida en plg (si existe) + Potencia (si existe) + atributo real explícito.
-- Ejemplos:
-  "Rotomartillo 1/2 plg 850 W"
-  "Taladro Rotomartillo 3/8 plg 550 W"
-  "Taladro 1/2 plg Inalámbrico 20 V"
+3. NUNCA incluyas marcas en los títulos
 
-3) SIERRAS (circular, caladora, inglete, mesa)
-- Formato:
-  Tipo de Sierra + Tamaño (plg) + Potencia (W)
-- Ejemplos:
-  "Sierra Circular 7 1/4 plg 1400 W"
-  "Sierra Caladora 400 W"
+4. NUNCA inventes características técnicas que no estén en el original
+   (No agregues: penetrante, hidráulico, neumático, dieléctrico, etc.)
 
-4) HERRAMIENTA ELÉCTRICA GENERAL (pulidoras, lijadoras, etc.)
-- Formato:
-  Tipo + Tamaño (si aplica) + Potencia (W/V/HP).
-- No agregues "profesional", "uso doméstico" ni "eléctrico con cable" a menos que esté en los datos.
+5. Mantén medidas exactas: HP (mayúsculas), plg, mm, cm, m, L/min
 
-5) TUBERÍA Y ACCESORIOS (PVC, CPVC, galvanizado, etc.)
-- Formato:
-  Tipo + Material + Medida (plg, mm, cm)
-- Ejemplos:
-  "Codo CPVC 1/2 plg"
-  "Tee PVC 3/4 plg"
-  "Tubo PVC 1/2 plg 3 m"
+6. Usa español natural con preposiciones (de, con, x) cuando corresponda
 
-6) ILUMINACIÓN
-- Formato:
-  Tipo + Potencia (W) + Temperatura de color (si aplica)
-- Ejemplos:
-  "Foco LED 12 W Luz Cálida"
-  "Panel LED 48 W 6000 K"
+PRODUCTOS A PROCESAR:
+{json.dumps(products_json, indent=2, ensure_ascii=False)}
 
-LÍMITES DE CADA TÍTULO:
-a) TÍTULO SISTEMA (40 caracteres máx):
-   - Conciso, claro, sin marca
-   - Sigue el patrón de nomenclatura exactamente
-b) TÍTULO ETIQUETA (36 caracteres máx):
-   - Si el título sistema cabe en 36 caracteres, reutilízalo
-   - Si no, crea una versión más corta manteniendo lo crítico
-c) TÍTULO SEO:
-   - Más descriptivo, optimizado para búsqueda en cemaco.com
-   - Incluye palabras clave relevantes del producto
-   - Sin taxonomía salvo que desambiguar sea necesario
-   - Idealmente entre 50 y 70 caracteres
-
-RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
-{{
-  "titulo_sistema": "...",
-  "longitud_sistema": 40,
-  "titulo_etiqueta": "...",
-  "longitud_etiqueta": 36,
-  "titulo_seo": "...",
-  "longitud_seo": 65,
-  "transformaciones_aplicadas": [],
-  "cumple_nomenclatura": true,
-  "notas": ""
-}}"""
+RESPONDE SOLO CON UN JSON ARRAY con {len(products_batch)} objetos (mismo orden que recibiste):
+[
+  {{
+    "titulo_sistema": "max 40 caracteres",
+    "titulo_etiqueta": "max 36 caracteres",
+    "titulo_seo": "50-70 caracteres optimizado para búsqueda"
+  }},
+  ...
+]"""
 
     try:
+        client = Anthropic(api_key=api_key)
         message = client.messages.create(
             model="claude-sonnet-4-20250514",
-            max_tokens=1000,
-            messages=[{"role": "user", "content": prompt}]
+            max_tokens=4000,
+            messages=[{"role": "user", "content": batch_prompt}]
         )
-
+        
         response_text = message.content[0].text.strip()
         response_text = response_text.replace("```json", "").replace("```", "").strip()
-
-        result = json.loads(response_text)
-
-        # Post-processing
-        brand = ""
-        try:
-            brand = (product_info.get("marca") or "").strip()
-        except Exception:
-            brand = ""
-
-        for key in ["titulo_sistema", "titulo_etiqueta", "titulo_seo"]:
-            if key in result and isinstance(result[key], str):
-                t = result[key]
-
-                               # 1) Memoria de transformaciones (pulgadas -> plg, etc.)
-                t = apply_transformations(t, transformations)
-
-                # 2) Quita marca
-                t = remove_brand_occurrences(t, brand)
-
-                # 3) Mayúsculas correctas
-                t = de_shout(t)
-
-                # 4) Elimina términos técnicos que no queremos inventar
-                t = remove_forbidden_terms(t)
-
-                # 5) Quita finales genéricos ("para plomería", "para tubería", etc.)
-                t = remove_generic_para_phrases(t)
-
-                # 6) Normaliza espacios
-                result[key] = " ".join(t.split())
-
-        return result
-
+        
+        batch_results = json.loads(response_text)
+        
+        if not isinstance(batch_results, list):
+            raise ValueError("Expected JSON array from batch processing")
+        
+        # Process each result
+        final_results = []
+        
+        for idx, (product, result) in enumerate(zip(products_batch, batch_results)):
+            
+            # Apply post-processing
+            brand = product.get("marca", "").strip()
+            
+            for key in ["titulo_sistema", "titulo_etiqueta", "titulo_seo"]:
+                if key in result and isinstance(result[key], str):
+                    t = result[key]
+                    
+                    # 1) Transformations
+                    t = apply_transformations(t, transformations)
+                    
+                    # 2) Remove brand
+                    t = remove_brand_occurrences(t, brand)
+                    
+                    # 3) Fix caps
+                    t = de_shout(t)
+                    
+                    # 4) Remove forbidden terms
+                    t = remove_forbidden_terms(t)
+                    
+                    # 5) Remove generic phrases
+                    t = remove_generic_para_phrases(t)
+                    
+                    # 6) Normalize spaces
+                    result[key] = " ".join(t.split())
+            
+            # Validation
+            original_title = product["titulo_sistema_existente"]
+            generated_seo = result.get("titulo_seo", "")
+            
+            # Quick rules validation (free & fast)
+            quick_issues = quick_validation_rules(original_title, generated_seo)
+            
+            validation_metadata = {
+                "validation_method": "none",
+                "validation_status": "passed",
+                "issues_found": [],
+                "corrected": False
+            }
+            
+            # AI validation if quick check found issues and enabled
+            if quick_issues and enable_ai_validation:
+                ai_validation = validate_with_agent(original_title, generated_seo, api_key)
+                
+                if not ai_validation.get("is_valid", True):
+                    # Use corrected version
+                    result["titulo_seo"] = ai_validation.get("corrected_title", generated_seo)
+                    validation_metadata["corrected"] = True
+                    validation_metadata["validation_status"] = "corrected"
+                else:
+                    validation_metadata["validation_status"] = "passed_with_warnings"
+                
+                validation_metadata["validation_method"] = "ai_validated"
+                validation_metadata["issues_found"] = quick_issues + ai_validation.get("issues_found", [])
+                
+            elif quick_issues:
+                # Just flag the issues without AI correction
+                validation_metadata["validation_method"] = "rules_only"
+                validation_metadata["validation_status"] = "warnings"
+                validation_metadata["issues_found"] = quick_issues
+            
+            result["validation"] = validation_metadata
+            final_results.append(result)
+        
+        return final_results
+        
     except Exception as e:
-        st.error(f"Error generando títulos: {e}")
-        return None
+        st.error(f"Error in batch processing: {e}")
+        return []
+
+
+# =========================
+#   COVERAGE ANALYSIS
+# =========================
+
+def analyze_coverage(products_df: pd.DataFrame, nomenclature_df: pd.DataFrame) -> dict:
+    """
+    Analyze which products have matching nomenclature rules.
+    Returns statistics and list of uncovered categories.
+    """
+    covered = 0
+    uncovered_categories = {}
+    
+    for _, row in products_df.iterrows():
+        pattern = find_pattern_row(
+            nomenclature_df,
+            row.get('departamento', ''),
+            row.get('familia', ''),
+            row.get('categoria', '')
+        )
+        if pattern is not None:
+            covered += 1
+        else:
+            cat_key = f"{row.get('departamento', 'N/A')}/{row.get('familia', 'N/A')}/{row.get('categoria', 'N/A')}"
+            if cat_key not in uncovered_categories:
+                uncovered_categories[cat_key] = 0
+            uncovered_categories[cat_key] += 1
+    
+    total = len(products_df)
+    coverage_pct = (covered / total * 100) if total > 0 else 0
+    
+    return {
+        'total': total,
+        'covered': covered,
+        'uncovered': total - covered,
+        'coverage_percent': coverage_pct,
+        'uncovered_categories': uncovered_categories
+    }
 
 
 # =========================
@@ -445,7 +633,7 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
 # =========================
 
 st.title("📝 Generador de Títulos de Catálogo - Cemaco")
-st.markdown("### Sistema de nomenclatura con memoria de transformaciones")
+st.markdown("### Sistema con validación de dos agentes y procesamiento por lotes")
 
 # Sidebar
 with st.sidebar:
@@ -493,8 +681,27 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # Validation settings
+    st.subheader("2. Configuración de Validación")
+    enable_ai_validation = st.checkbox(
+        "Activar validación con IA",
+        value=True,
+        help="Usa un segundo agente de IA para validar y corregir títulos (duplica llamadas API pero mejora calidad)"
+    )
+    
+    batch_size = st.slider(
+        "Tamaño de lote",
+        min_value=10,
+        max_value=50,
+        value=25,
+        step=5,
+        help="Cuántos productos procesar por llamada API (mayor = más rápido pero menos flexible)"
+    )
+
+    st.markdown("---")
+
     # Memoria de transformaciones
-    st.subheader("2. Memoria de Transformaciones")
+    st.subheader("3. Memoria de Transformaciones")
     st.caption("Mantén consistencia en abreviaciones (ej: pulgadas -> plg)")
 
     col1, col2 = st.columns(2)
@@ -521,17 +728,16 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Export
-    st.subheader("3. Exportar Resultados")
-    if st.session_state.generated_titles:
-        df_export = pd.DataFrame(st.session_state.generated_titles)
-        csv = df_export.to_csv(index=False, encoding='utf-8-sig')
-        st.download_button(
-            label="📥 Descargar Títulos Generados",
-            data=csv,
-            file_name=f"titulos_generados_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-            mime="text/csv"
-        )
+    # Validation stats
+    if st.session_state.validation_stats['total_processed'] > 0:
+        st.subheader("📊 Estadísticas de Validación")
+        stats = st.session_state.validation_stats
+        st.metric("Total Procesados", stats['total_processed'])
+        st.metric("Aprobados", stats['validation_passed'])
+        st.metric("Corregidos", stats['validation_corrected'])
+        if stats['validation_failed'] > 0:
+            st.metric("Fallidos", stats['validation_failed'])
+
 
 # Main
 if st.session_state.nomenclature_df is None:
@@ -539,650 +745,235 @@ if st.session_state.nomenclature_df is None:
 else:
     df = st.session_state.nomenclature_df
 
-    tab1, tab2, tab3 = st.tabs([
-        "🔨 Crear Título Individual",
-        "✏️ Ya Tengo Título Sistema",
-        "📦 Procesamiento por Lote"
+    tab1, tab2 = st.tabs([
+        "📦 Procesamiento por Lote",
+        "🔍 Análisis de Cobertura"
     ])
 
     # -------------------------
-    # TAB 1: Individual
+    # TAB 1: Batch Processing
     # -------------------------
     with tab1:
-        st.subheader("Crear Nuevo Título")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            departamentos = sorted(df['Departamento'].unique())
-            selected_dept = st.selectbox("Departamento", options=departamentos)
-
-        with col2:
-            familias = sorted(df[df['Departamento'] == selected_dept]['Familia'].unique())
-            selected_familia = st.selectbox("Familia", options=familias)
-
-        with col3:
-            categorias = sorted(df[
-                (df['Departamento'] == selected_dept) &
-                (df['Familia'] == selected_familia)
-            ]['Categoria'].unique())
-            selected_categoria = st.selectbox("Categoría", options=categorias)
-
-        pattern_row = df[
-            (df['Departamento'] == selected_dept) &
-            (df['Familia'] == selected_familia) &
-            (df['Categoria'] == selected_categoria)
-        ]
-
-        if not pattern_row.empty:
-            nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
-            ejemplo = pattern_row.iloc[0]['Ejemplo aplicado']
-
-            st.info(f"**Patrón de Nomenclatura:** {nomenclatura}")
-            st.caption(f"Ejemplo: {ejemplo}")
-
-            st.markdown("---")
-
-            st.subheader("Información del Producto")
-
-            product_name = st.text_input("Nombre del Producto", help="Nombre base del producto")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                tipo = st.text_input("Tipo", help="Ej: Tornillo, Cable, Bomba")
-                material = st.text_input("Material", help="Ej: Acero, PVC, Cobre")
-                medidas = st.text_input("Dimensiones", help="Ej: 1/2 x 6m, 10x20cm")
-
-            with col2:
-                color = st.text_input("Color", help="Ej: Blanco, Negro, Gris")
-                marca = st.text_input("Marca (no se usará en el título)", help="Solo para contexto interno")
-                otros = st.text_area("Otros atributos", help="Características adicionales")
-
-            if st.button("🚀 Generar Títulos", type="primary", use_container_width=True):
-                if product_name or tipo:
-                    with st.spinner("Generando títulos optimizados..."):
-                        product_info = {
-                            "nombre_producto": product_name,
-                            "tipo": tipo,
-                            "material": material,
-                            "dimensiones": medidas,
-                            "color": color,
-                            "marca": marca,
-                            "otros_atributos": otros,
-                            "departamento": selected_dept,
-                            "familia": selected_familia,
-                            "categoria": selected_categoria
-                        }
-
-                        result = generate_titles(
-                            product_info,
-                            nomenclatura,
-                            st.session_state.transformation_memory
-                        )
-
-                        if result:
-                            st.success("✅ Títulos Generados Exitosamente")
-
-                            col1, col2, col3 = st.columns(3)
-
-                            with col1:
-                                st.markdown("### 📋 Título Sistema")
-                                titulo_sistema = result.get('titulo_sistema', '')
-                                chars_sistema = len(titulo_sistema)
-                                color_sistema = "green" if chars_sistema <= 40 else "red"
-                                st.markdown(f"**{titulo_sistema}**")
-                                st.markdown(
-                                    f"<span style='color:{color_sistema}'>Longitud: {chars_sistema}/40</span>",
-                                    unsafe_allow_html=True
-                                )
-
-                            with col2:
-                                st.markdown("### 🏷️ Título Etiqueta")
-                                titulo_etiqueta = result.get('titulo_etiqueta', '')
-                                chars_etiqueta = len(titulo_etiqueta)
-                                color_etiqueta = "green" if chars_etiqueta <= 36 else "red"
-                                st.markdown(f"**{titulo_etiqueta}**")
-                                st.markdown(
-                                    f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>",
-                                    unsafe_allow_html=True
-                                )
-
-                            with col3:
-                                st.markdown("### 🌐 Título SEO")
-                                titulo_seo = result.get('titulo_seo', '')
-                                chars_seo = len(titulo_seo)
-                                st.markdown(f"**{titulo_seo}**")
-                                st.markdown(f"Longitud: {chars_seo} caracteres")
-
-                            if result.get('transformaciones_aplicadas'):
-                                st.info(
-                                    f"**Transformaciones aplicadas:** "
-                                    f"{', '.join(result['transformaciones_aplicadas'])}"
-                                )
-
-                            result_with_meta = {
-                                **result,
-                                **product_info,
-                                "fecha": datetime.now().isoformat()
-                            }
-                            st.session_state.generated_titles.append(result_with_meta)
-
-                            if result.get('notas'):
-                                st.caption(f"📝 {result['notas']}")
-                else:
-                    st.warning("⚠️ Ingresa al menos el nombre del producto o tipo")
-
-    # -------------------------
-    # TAB 2: Ya tengo título sistema
-    # -------------------------
-    with tab2:
-        st.subheader("Ya Tengo el Título del Sistema")
-        st.markdown(
-            "Genera únicamente los títulos de **Etiqueta** y **SEO** a partir de un título sistema existente "
-            "(sin marca y con corrección de mayúsculas)."
-        )
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            departamentos = sorted(df['Departamento'].unique())
-            selected_dept_existing = st.selectbox(
-                "Departamento", options=departamentos, key="dept_existing"
-            )
-
-        with col2:
-            familias = sorted(
-                df[df['Departamento'] == selected_dept_existing]['Familia'].unique()
-            )
-            selected_familia_existing = st.selectbox(
-                "Familia", options=familias, key="familia_existing"
-            )
-
-        with col3:
-            categorias = sorted(df[
-                (df['Departamento'] == selected_dept_existing) &
-                (df['Familia'] == selected_familia_existing)
-            ]['Categoria'].unique())
-            selected_categoria_existing = st.selectbox(
-                "Categoría", options=categorias, key="categoria_existing"
-            )
-
-        pattern_row = df[
-            (df['Departamento'] == selected_dept_existing) &
-            (df['Familia'] == selected_familia_existing) &
-            (df['Categoria'] == selected_categoria_existing)
-        ]
-
-        if not pattern_row.empty:
-            nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
-            ejemplo = pattern_row.iloc[0]['Ejemplo aplicado']
-
-            st.info(f"**Patrón de Nomenclatura:** {nomenclatura}")
-            st.caption(f"Ejemplo: {ejemplo}")
-
-            st.markdown("---")
-
-            existing_title = st.text_area(
-                "Título Sistema Existente",
-                help="Pega aquí el título del sistema que ya tienes (máx 40 caracteres)",
-                max_chars=80
-            )
-
-            if existing_title:
-                chars_existing = len(existing_title)
-                if chars_existing > 40:
-                    st.warning(f"⚠️ El título tiene {chars_existing} caracteres (límite: 40)")
-                else:
-                    st.success(f"✅ Longitud: {chars_existing}/40 caracteres")
-
-            if st.button(
-                "🚀 Generar Etiqueta y SEO",
-                type="primary",
-                use_container_width=True,
-                key="gen_existing"
-            ):
-                if existing_title:
-                    with st.spinner("Generando títulos de etiqueta y SEO..."):
-                        product_info = {
-                            "titulo_sistema_existente": existing_title,
-                            "departamento": selected_dept_existing,
-                            "familia": selected_familia_existing,
-                            "categoria": selected_categoria_existing,
-                            "marca": ""  # nunca usamos marca en títulos
-                        }
-
-                        result = generate_titles(
-                            product_info,
-                            nomenclatura,
-                            st.session_state.transformation_memory
-                        )
-
-                        if result:
-                            st.success("✅ Títulos Generados Exitosamente")
-
-                            col1, col2, col3 = st.columns(3)
-
-                            with col1:
-                                st.markdown("### 📋 Título Sistema (Original)")
-                                cleaned_existing = de_shout(
-                                    remove_brand_occurrences(existing_title, "")
-                                )
-                                st.markdown(f"**{cleaned_existing}**")
-                                st.markdown(f"Longitud: {len(cleaned_existing)}/40")
-
-                            with col2:
-                                st.markdown("### 🏷️ Título Etiqueta")
-                                titulo_etiqueta = result.get('titulo_etiqueta', '')
-                                chars_etiqueta = len(titulo_etiqueta)
-                                color_etiqueta = "green" if chars_etiqueta <= 36 else "red"
-                                st.markdown(f"**{titulo_etiqueta}**")
-                                st.markdown(
-                                    f"<span style='color:{color_etiqueta}'>Longitud: {chars_etiqueta}/36</span>",
-                                    unsafe_allow_html=True
-                                )
-
-                            with col3:
-                                st.markdown("### 🌐 Título SEO")
-                                titulo_seo = result.get('titulo_seo', '')
-                                chars_seo = len(titulo_seo)
-                                st.markdown(f"**{titulo_seo}**")
-                                st.markdown(f"Longitud: {chars_seo} caracteres")
-
-                            if result.get('transformaciones_aplicadas'):
-                                st.info(
-                                    f"**Transformaciones aplicadas:** "
-                                    f"{', '.join(result['transformaciones_aplicadas'])}"
-                                )
-
-                            result_with_meta = {
-                                "titulo_sistema_original": cleaned_existing,
-                                **result,
-                                "departamento": selected_dept_existing,
-                                "familia": selected_familia_existing,
-                                "categoria": selected_categoria_existing,
-                                "fecha": datetime.now().isoformat()
-                            }
-                            st.session_state.generated_titles.append(result_with_meta)
-
-                            if result.get('notas'):
-                                st.caption(f"📝 {result['notas']}")
-                else:
-                    st.warning("⚠️ Por favor ingresa un título sistema")
-
-    # -------------------------
-    # TAB 3: Lote
-    # -------------------------
-    with tab3:
-        st.subheader("Procesamiento por Lote")
-        st.markdown(
-            "Dos modos: **Simplificado** (una categoría para todos) "
-            "o **Completo** (cada fila trae su categoría)."
-        )
-
-        generate_opts = st.multiselect(
-            "¿Qué tipos de título quieres generar en el lote?",
-            options=["Sistema", "Etiqueta", "SEO"],
-            default=["Etiqueta", "SEO"],
-            help="Elige uno, dos o los tres tipos."
-        )
-        want_sistema = "Sistema" in generate_opts
-        want_etiqueta = "Etiqueta" in generate_opts
-        want_seo = "SEO" in generate_opts
-
-        mode = st.radio(
-            "Modo de Procesamiento:",
-            ["🎯 Simplificado - Una categoría para todos", "📋 Completo - Categorías individuales"],
-            help="Simplificado: todos los títulos usan la misma categoría. "
-                 "Completo: cada título tiene su propia categoría en el CSV"
-        )
-
-        st.markdown("---")
-
-        if mode == "🎯 Simplificado - Una categoría para todos":
-            st.markdown("### 1️⃣ Selecciona la Categoría")
-            st.caption("Todos los títulos que subas usarán esta categoría")
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                departamentos_simple = sorted(df['Departamento'].unique())
-                selected_dept_simple = st.selectbox(
-                    "Departamento", options=departamentos_simple, key="dept_simple"
-                )
-
-            with col2:
-                familias_simple = sorted(
-                    df[df['Departamento'] == selected_dept_simple]['Familia'].unique()
-                )
-                selected_familia_simple = st.selectbox(
-                    "Familia", options=familias_simple, key="familia_simple"
-                )
-
-            with col3:
-                categorias_simple = sorted(df[
-                    (df['Departamento'] == selected_dept_simple) &
-                    (df['Familia'] == selected_familia_simple)
-                ]['Categoria'].unique())
-                selected_categoria_simple = st.selectbox(
-                    "Categoría", options=categorias_simple, key="categoria_simple"
-                )
-
-            pattern_row = df[
-                (df['Departamento'] == selected_dept_simple) &
-                (df['Familia'] == selected_familia_simple) &
-                (df['Categoria'] == selected_categoria_simple)
-            ]
-
-            if not pattern_row.empty:
-                nomenclatura = pattern_row.iloc[0]['Nomenclatura sugerida']
-                ejemplo = pattern_row.iloc[0]['Ejemplo aplicado']
-
-                st.info(f"**Patrón:** {nomenclatura}")
-                st.caption(f"Ejemplo: {ejemplo}")
-
-            st.markdown("---")
-            st.markdown("### 2️⃣ Sube tu Archivo")
-            st.caption("CSV o Excel con una columna llamada 'titulo_sistema' o similar")
-
-            uploaded_simple = st.file_uploader(
-                "Archivo con títulos",
-                type=['csv', 'xlsx', 'xls'],
-                key="simple_upload",
-                help="Solo necesitas una columna con los títulos del sistema (puede incluir SKU)."
-            )
-
-            if uploaded_simple:
-                file_extension = uploaded_simple.name.split('.')[-1].lower()
-
-                try:
-                    if file_extension == 'csv':
-                        simple_df = pd.read_csv(uploaded_simple, encoding='utf-8-sig')
-                    else:
-                        simple_df = pd.read_excel(uploaded_simple)
-
-                    title_col = None
-                    possible_names = [
-                        'titulo_sistema', 'titulos', 'titulo', 'títulos',
-                        'título', 'title', 'titles'
-                    ]
-
-                    for col in simple_df.columns:
-                        if col.lower().strip() in possible_names:
-                            title_col = col
-                            break
-
-                    if title_col is None:
-                        st.error(
-                            "❌ No se encontró una columna de títulos. "
-                            "Busqué: " + ", ".join(possible_names)
-                        )
-                        st.info(
-                            "**Columnas encontradas:** " +
-                            ", ".join(simple_df.columns.tolist())
-                        )
-                    else:
-                        st.success(f"✅ {len(simple_df)} títulos cargados desde columna '{title_col}'")
-                        st.dataframe(simple_df.head(10))
-                        if len(simple_df) > 10:
-                            st.caption(f"Mostrando las primeras 10 de {len(simple_df)} filas")
-
-                        if st.button(
-                            "🚀 Procesar Todos",
-                            type="primary",
-                            key="process_simple"
-                        ):
-                            if not pattern_row.empty:
-                                progress_bar = st.progress(0)
-                                status_text = st.empty()
-                                results = []
-
-                                for idx, row in simple_df.iterrows():
-                                    titulo = str(row[title_col]).strip()
-                                    if titulo and titulo != 'nan':
-                                        status_text.text(
-                                            f"Procesando {idx + 1} de {len(simple_df)}: "
-                                            f"{titulo[:40]}..."
-                                        )
-
-                                        product_info = {
-                                            "titulo_sistema_existente": titulo,
-                                            "departamento": selected_dept_simple,
-                                            "familia": selected_familia_simple,
-                                            "categoria": selected_categoria_simple,
-                                            "marca": ""
-                                        }
-
-                                        result = generate_titles(
-                                            product_info,
-                                            nomenclatura,
-                                            st.session_state.transformation_memory
-                                        )
-
-                                        if result:
-                                            row_out = {
-                                                'titulo_sistema_original': titulo,
-                                                'departamento': selected_dept_simple,
-                                                'familia': selected_familia_simple,
-                                                'categoria': selected_categoria_simple
-                                            }
-                                            if 'SKU' in simple_df.columns:
-                                                row_out['SKU'] = row['SKU']
-                                            if want_sistema and 'titulo_sistema' in result:
-                                                row_out['titulo_sistema_generado'] = result['titulo_sistema']
-                                            if want_etiqueta and 'titulo_etiqueta' in result:
-                                                row_out['titulo_etiqueta'] = result['titulo_etiqueta']
-                                            if want_seo and 'titulo_seo' in result:
-                                                row_out['titulo_seo'] = result['titulo_seo']
-                                            results.append(row_out)
-
-                                    progress_bar.progress((idx + 1) / len(simple_df))
-
-                                status_text.empty()
-
-                                if results:
-                                    st.success(f"✅ Procesados {len(results)} títulos exitosamente")
-                                    results_df = pd.DataFrame(results)
-                                    st.dataframe(results_df)
-
-                                    csv = results_df.to_csv(index=False, encoding='utf-8-sig')
-                                    st.download_button(
-                                        label="📥 Descargar Resultados CSV",
-                                        data=csv,
-                                        file_name=f"titulos_procesados_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                                        mime="text/csv"
-                                    )
-                                else:
-                                    st.warning("⚠️ No se procesaron títulos")
-
-                except Exception as e:
-                    st.error(f"❌ Error al leer el archivo: {e}")
-                    st.stop()  # detiene la ejecución y no intenta seguir con batch_df
-        else:
-            # ---------------------
-            # Modo completo
-            # ---------------------
-            st.markdown("### 📋 Modo Completo")
-            st.caption("Tu archivo debe incluir: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)")
-            
-            st.markdown("### 🔍 Filtros (Opcional)")
-            st.caption("Procesa solo productos de categorías específicas")
-            
-            col1, col2, col3, col4 = st.columns([3, 3, 3, 1])
-            
-            with col1:
-                departamentos_batch = ["Todos"] + sorted(df['Departamento'].unique().tolist())
-                selected_dept_batch = st.selectbox(
-                    "Departamento", options=departamentos_batch, key="dept_batch"
-                )
-            
-            with col2:
-                if selected_dept_batch != "Todos":
-                    familias_batch = ["Todos"] + sorted(
-                        df[df['Departamento'] == selected_dept_batch]['Familia'].unique().tolist()
-                    )
-                else:
-                    familias_batch = ["Todos"]
-                selected_familia_batch = st.selectbox(
-                    "Familia", options=familias_batch, key="familia_batch"
-                )
-            
-            with col3:
-                if selected_dept_batch != "Todos" and selected_familia_batch != "Todos":
-                    categorias_batch = ["Todos"] + sorted(df[
-                        (df['Departamento'] == selected_dept_batch) &
-                        (df['Familia'] == selected_familia_batch)
-                    ]['Categoria'].unique().tolist())
-                else:
-                    categorias_batch = ["Todos"]
-                selected_categoria_batch = st.selectbox(
-                    "Categoría", options=categorias_batch, key="categoria_batch"
-                )
-            
-            with col4:
-                st.markdown("&nbsp;")
-                if st.button("🔄", help="Resetear filtros"):
-                    st.rerun()
-            
-            st.markdown("---")
+        st.markdown("### 📋 Procesamiento por Lote con Validación")
+        st.caption("Carga tu archivo CSV/Excel con productos para procesar")
         
-            uploaded_batch = st.file_uploader(
-                "Archivo CSV o Excel con títulos y categorías",
-                type=['csv', 'xlsx', 'xls'],
-                key="batch_upload",
-                help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)"
-            )
+        uploaded_batch = st.file_uploader(
+            "Archivo CSV o Excel con títulos y categorías",
+            type=['csv', 'xlsx', 'xls'],
+            key="batch_upload",
+            help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)"
+        )
+        
+        if uploaded_batch:
+            file_extension = uploaded_batch.name.split('.')[-1].lower()
             
-            # 👇 TODO lo demás va DENTRO de este if
-            if uploaded_batch:
-                file_extension = uploaded_batch.name.split('.')[-1].lower()
+            try:
+                if file_extension == 'csv':
+                    batch_df = pd.read_csv(uploaded_batch, encoding='utf-8-sig')
+                else:
+                    batch_df = pd.read_excel(uploaded_batch)
                 
-                # 1) Leer archivo con manejo de errores
-                try:
-                    if file_extension == 'csv':
-                        batch_df = pd.read_csv(uploaded_batch, encoding='utf-8-sig')
-                    else:
-                        batch_df = pd.read_excel(uploaded_batch)
-                except Exception as e:
-                    st.error(f"❌ Error al leer el archivo: {e}")
-                    st.stop()
-                
-                # 2) Validar columnas requeridas
+                # Validate columns
                 required_cols = ['titulo_sistema', 'departamento', 'familia', 'categoria']
                 missing_cols = [col for col in required_cols if col not in batch_df.columns]
                 
                 if missing_cols:
                     st.error(f"❌ Faltan columnas requeridas: {', '.join(missing_cols)}")
-                    st.info(
-                        "**Columnas encontradas:** " +
-                        ", ".join(batch_df.columns.tolist())
-                    )
+                    st.info("**Columnas encontradas:** " + ", ".join(batch_df.columns.tolist()))
                     st.info("**Columnas requeridas:** " + ", ".join(required_cols))
                 else:
-                    # 3) Aplicar filtros opcionales
-                    filtered_df = batch_df.copy()
-                    filter_applied = False
+                    st.success(f"✅ Archivo cargado: {len(batch_df)} productos")
                     
-                    if selected_dept_batch != "Todos":
-                        filtered_df = filtered_df[
-                            filtered_df['departamento'] == selected_dept_batch
-                        ]
-                        filter_applied = True
+                    # Preview
+                    st.dataframe(batch_df.head(10))
+                    if len(batch_df) > 10:
+                        st.caption(f"Mostrando las primeras 10 filas de {len(batch_df)} productos")
                     
-                    if selected_familia_batch != "Todos":
-                        filtered_df = filtered_df[
-                            filtered_df['familia'] == selected_familia_batch
-                        ]
-                        filter_applied = True
+                    # Processing options
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        want_sistema = st.checkbox("Generar Título Sistema", value=True)
+                        want_etiqueta = st.checkbox("Generar Título Etiqueta", value=True)
+                    with col2:
+                        want_seo = st.checkbox("Generar Título SEO", value=True)
+                        save_checkpoints = st.checkbox("Guardar checkpoints cada 500", value=True)
                     
-                    if selected_categoria_batch != "Todos":
-                        filtered_df = filtered_df[
-                            filtered_df['categoria'] == selected_categoria_batch
-                        ]
-                        filter_applied = True
+                    st.markdown("---")
                     
-                    if filter_applied:
-                        st.info(
-                            f"🔍 Filtros aplicados: "
-                            f"{len(filtered_df)} de {len(batch_df)} productos seleccionados"
-                        )
-                    
-                    st.dataframe(filtered_df.head(10))
-                    if len(filtered_df) > 10:
-                        st.caption(
-                            f"Mostrando las primeras 10 filas de {len(filtered_df)} productos"
-                        )
-                    
-                    # 4) Si no hay productos, aviso. Si sí hay, muestro el botón.
-                    if len(filtered_df) == 0:
-                        st.warning(
-                            "⚠️ No hay productos que coincidan con los filtros seleccionados"
-                        )
-                    else:
-                        if st.button("🚀 Procesar Lote", type="primary"):
+                    if st.button("🚀 Procesar Lote", type="primary"):
+                        
+                        # Get API key
+                        api_key = None
+                        try:
+                            if "ANTHROPIC_API_KEY" in st.secrets:
+                                api_key = st.secrets["ANTHROPIC_API_KEY"]
+                        except:
+                            pass
+                        if not api_key:
+                            api_key = st.session_state.api_key
+                        
+                        if not api_key:
+                            st.error("❌ API key no configurada")
+                        else:
                             progress_bar = st.progress(0)
                             status_text = st.empty()
                             results = []
+                            failed_products = []
                             
-                            for idx, row in filtered_df.iterrows():
-                                status_text.text(
-                                    f"Procesando {idx + 1} de {len(filtered_df)}..."
-                                )
+                            # Reset validation stats
+                            st.session_state.validation_stats = {
+                                'total_processed': 0,
+                                'validation_passed': 0,
+                                'validation_corrected': 0,
+                                'validation_failed': 0
+                            }
+                            
+                            # Process in batches
+                            total_products = len(batch_df)
+                            
+                            for batch_start in range(0, total_products, batch_size):
+                                batch_end = min(batch_start + batch_size, total_products)
+                                batch_rows = batch_df.iloc[batch_start:batch_end]
                                 
-                                pattern = find_pattern_row(
-                                    df,
-                                    row['departamento'],
-                                    row['familia'],
-                                    row['categoria']
-                                )
+                                status_text.text(f"Procesando lote {batch_start+1}-{batch_end} de {total_products}...")
                                 
-                                if pattern is None:
-                                    # No hay regla para esa categoría
+                                # Prepare batch
+                                products_batch = []
+                                batch_patterns = []
+                                
+                                for idx, row in batch_rows.iterrows():
+                                    pattern = find_pattern_row(
+                                        df,
+                                        row['departamento'],
+                                        row['familia'],
+                                        row['categoria']
+                                    )
+                                    
+                                    if pattern is None:
+                                        failed_products.append({
+                                            'sku': row.get('SKU', 'N/A'),
+                                            'titulo': row['titulo_sistema'],
+                                            'categoria': row['categoria'],
+                                            'reason': 'No matching nomenclature rule'
+                                        })
+                                        continue
+                                    
+                                    products_batch.append({
+                                        "titulo_sistema_existente": row['titulo_sistema'],
+                                        "departamento": row['departamento'],
+                                        "familia": row['familia'],
+                                        "categoria": row['categoria'],
+                                        "marca": "",
+                                        "row_data": row
+                                    })
+                                    batch_patterns.append(pattern['Nomenclatura sugerida'])
+                                
+                                if not products_batch:
                                     continue
                                 
-                                nomenclatura = pattern['Nomenclatura sugerida']
+                                # Use first pattern (they should all be similar for same category)
+                                nomenclatura = batch_patterns[0]
                                 
-                                product_info = {
-                                    "titulo_sistema_existente": row['titulo_sistema'],
-                                    "departamento": row['departamento'],
-                                    "familia": row['familia'],
-                                    "categoria": row['categoria'],
-                                    "marca": ""
-                                }
-                                
-                                result = generate_titles(
-                                    product_info,
-                                    nomenclatura,
-                                    st.session_state.transformation_memory
-                                )
-                                
-                                if result:
-                                    row_out = {
-                                        'titulo_sistema_original': row['titulo_sistema'],
-                                        'departamento': row['departamento'],
-                                        'familia': row['familia'],
-                                        'categoria': row['categoria']
-                                    }
-                                    # Mantener SKU si viene
-                                    if 'SKU' in filtered_df.columns:
-                                        row_out['SKU'] = row['SKU']
-                                    if want_sistema and 'titulo_sistema' in result:
-                                        row_out['titulo_sistema_generado'] = result['titulo_sistema']
-                                    if want_etiqueta and 'titulo_etiqueta' in result:
-                                        row_out['titulo_etiqueta'] = result['titulo_etiqueta']
-                                    if want_seo and 'titulo_seo' in result:
-                                        row_out['titulo_seo'] = result['titulo_seo']
+                                # Process batch
+                                try:
+                                    batch_results = process_batch_with_validation(
+                                        products_batch,
+                                        nomenclatura,
+                                        st.session_state.transformation_memory,
+                                        api_key,
+                                        enable_ai_validation
+                                    )
                                     
-                                    results.append(row_out)
+                                    # Collect results
+                                    for product, result in zip(products_batch, batch_results):
+                                        row = product['row_data']
+                                        
+                                        row_out = {
+                                            'titulo_sistema_original': row['titulo_sistema'],
+                                            'departamento': row['departamento'],
+                                            'familia': row['familia'],
+                                            'categoria': row['categoria']
+                                        }
+                                        
+                                        if 'SKU' in batch_df.columns:
+                                            row_out['SKU'] = row['SKU']
+                                        
+                                        if want_sistema and 'titulo_sistema' in result:
+                                            row_out['titulo_sistema_generado'] = result['titulo_sistema']
+                                        if want_etiqueta and 'titulo_etiqueta' in result:
+                                            row_out['titulo_etiqueta'] = result['titulo_etiqueta']
+                                        if want_seo and 'titulo_seo' in result:
+                                            row_out['titulo_seo'] = result['titulo_seo']
+                                        
+                                        # Add validation metadata
+                                        if 'validation' in result:
+                                            val = result['validation']
+                                            row_out['validation_status'] = val.get('validation_status', 'unknown')
+                                            if val.get('issues_found'):
+                                                row_out['validation_issues'] = '; '.join(val['issues_found'])
+                                            row_out['corrected'] = val.get('corrected', False)
+                                            
+                                            # Update stats
+                                            st.session_state.validation_stats['total_processed'] += 1
+                                            if val.get('validation_status') == 'passed':
+                                                st.session_state.validation_stats['validation_passed'] += 1
+                                            elif val.get('corrected'):
+                                                st.session_state.validation_stats['validation_corrected'] += 1
+                                        
+                                        results.append(row_out)
+                                    
+                                    # Small delay to avoid rate limits
+                                    time.sleep(0.5)
+                                    
+                                except Exception as e:
+                                    st.warning(f"Error procesando lote {batch_start}-{batch_end}: {e}")
+                                    for product in products_batch:
+                                        failed_products.append({
+                                            'sku': product['row_data'].get('SKU', 'N/A'),
+                                            'titulo': product['titulo_sistema_existente'],
+                                            'reason': str(e)
+                                        })
                                 
-                                progress_bar.progress((idx + 1) / len(filtered_df))
+                                # Update progress
+                                progress_bar.progress(batch_end / total_products)
+                                
+                                # Save checkpoint
+                                if save_checkpoints and len(results) > 0 and len(results) % 500 == 0:
+                                    checkpoint_df = pd.DataFrame(results)
+                                    checkpoint_df.to_csv(f'checkpoint_{len(results)}.csv', index=False)
+                                    st.info(f"💾 Checkpoint guardado: {len(results)} productos")
                             
                             status_text.empty()
+                            progress_bar.progress(1.0)
                             
+                            # Show results
                             if results:
                                 st.success(f"✅ Procesados {len(results)} títulos")
+                                
+                                # Show validation summary
+                                stats = st.session_state.validation_stats
+                                col1, col2, col3 = st.columns(3)
+                                with col1:
+                                    st.metric("Aprobados", stats['validation_passed'])
+                                with col2:
+                                    st.metric("Corregidos", stats['validation_corrected'])
+                                with col3:
+                                    if failed_products:
+                                        st.metric("Fallidos", len(failed_products))
+                                
                                 results_df = pd.DataFrame(results)
+                                
+                                # Filter to show corrected ones
+                                if 'corrected' in results_df.columns:
+                                    corrected_df = results_df[results_df['corrected'] == True]
+                                    if len(corrected_df) > 0:
+                                        st.markdown("### 🔧 Títulos Corregidos por Validador")
+                                        st.dataframe(corrected_df[['titulo_sistema_original', 'titulo_seo', 'validation_issues']])
+                                
+                                st.markdown("### 📋 Todos los Resultados")
                                 st.dataframe(results_df)
                                 
+                                # Download button
                                 csv = results_df.to_csv(index=False, encoding='utf-8-sig')
                                 st.download_button(
                                     label="📥 Descargar Resultados",
@@ -1190,8 +981,93 @@ else:
                                     file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                                     mime="text/csv"
                                 )
+                                
+                                # Show failed products if any
+                                if failed_products:
+                                    st.markdown("### ⚠️ Productos No Procesados")
+                                    failed_df = pd.DataFrame(failed_products)
+                                    st.dataframe(failed_df)
+                                    
+                                    csv_failed = failed_df.to_csv(index=False, encoding='utf-8-sig')
+                                    st.download_button(
+                                        label="📥 Descargar Productos Fallidos",
+                                        data=csv_failed,
+                                        file_name=f"failed_products_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                                        mime="text/csv"
+                                    )
                             else:
                                 st.warning("⚠️ No se generaron resultados")
+                
+            except Exception as e:
+                st.error(f"❌ Error al leer el archivo: {e}")
+    
+    # -------------------------
+    # TAB 2: Coverage Analysis
+    # -------------------------
+    with tab2:
+        st.markdown("### 🔍 Análisis de Cobertura de Nomenclatura")
+        st.caption("Verifica qué productos tienen reglas de nomenclatura definidas")
+        
+        uploaded_analysis = st.file_uploader(
+            "Archivo CSV o Excel para analizar",
+            type=['csv', 'xlsx', 'xls'],
+            key="analysis_upload"
+        )
+        
+        if uploaded_analysis:
+            try:
+                file_extension = uploaded_analysis.name.split('.')[-1].lower()
+                if file_extension == 'csv':
+                    analysis_df = pd.read_csv(uploaded_analysis, encoding='utf-8-sig')
+                else:
+                    analysis_df = pd.read_excel(uploaded_analysis)
+                
+                required_cols = ['departamento', 'familia', 'categoria']
+                missing_cols = [col for col in required_cols if col not in analysis_df.columns]
+                
+                if missing_cols:
+                    st.error(f"❌ Faltan columnas: {', '.join(missing_cols)}")
+                else:
+                    if st.button("🔍 Analizar Cobertura"):
+                        with st.spinner("Analizando..."):
+                            coverage = analyze_coverage(analysis_df, df)
+                        
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Total Productos", coverage['total'])
+                        with col2:
+                            st.metric("Con Nomenclatura", coverage['covered'])
+                        with col3:
+                            st.metric("Cobertura", f"{coverage['coverage_percent']:.1f}%")
+                        
+                        if coverage['uncovered'] > 0:
+                            st.warning(f"⚠️ {coverage['uncovered']} productos sin reglas de nomenclatura")
+                            
+                            st.markdown("### Categorías Sin Cobertura")
+                            uncovered_list = []
+                            for cat, count in coverage['uncovered_categories'].items():
+                                uncovered_list.append({
+                                    'Categoría': cat,
+                                    'Productos Afectados': count
+                                })
+                            
+                            uncovered_df = pd.DataFrame(uncovered_list)
+                            uncovered_df = uncovered_df.sort_values('Productos Afectados', ascending=False)
+                            st.dataframe(uncovered_df)
+                            
+                            csv_uncovered = uncovered_df.to_csv(index=False, encoding='utf-8-sig')
+                            st.download_button(
+                                label="📥 Descargar Categorías Sin Cobertura",
+                                data=csv_uncovered,
+                                file_name=f"uncovered_categories_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                                mime="text/csv"
+                            )
+                        else:
+                            st.success("✅ Todos los productos tienen nomenclatura definida")
+            
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
+
 # Footer
 st.markdown("---")
-st.caption("Generador de Títulos de Catálogo by JC - Cemaco © 2025")
+st.caption("Generador de Títulos de Catálogo con Sistema de Validación de Dos Agentes -by JC - Cemaco © 2025")
