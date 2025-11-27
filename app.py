@@ -998,21 +998,23 @@ else:
                     st.error(f"❌ Error al leer el archivo: {e}")
                     st.stop()  # detiene la ejecución y no intenta seguir con batch_df
         else:
+            # ---------------------
             # Modo completo
+            # ---------------------
             st.markdown("### 📋 Modo Completo")
             st.caption("Tu archivo debe incluir: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)")
-
+            
             st.markdown("### 🔍 Filtros (Opcional)")
             st.caption("Procesa solo productos de categorías específicas")
-
+            
             col1, col2, col3, col4 = st.columns([3, 3, 3, 1])
-
+            
             with col1:
                 departamentos_batch = ["Todos"] + sorted(df['Departamento'].unique().tolist())
                 selected_dept_batch = st.selectbox(
                     "Departamento", options=departamentos_batch, key="dept_batch"
                 )
-
+            
             with col2:
                 if selected_dept_batch != "Todos":
                     familias_batch = ["Todos"] + sorted(
@@ -1023,7 +1025,7 @@ else:
                 selected_familia_batch = st.selectbox(
                     "Familia", options=familias_batch, key="familia_batch"
                 )
-
+            
             with col3:
                 if selected_dept_batch != "Todos" and selected_familia_batch != "Todos":
                     categorias_batch = ["Todos"] + sorted(df[
@@ -1035,24 +1037,26 @@ else:
                 selected_categoria_batch = st.selectbox(
                     "Categoría", options=categorias_batch, key="categoria_batch"
                 )
-
+            
             with col4:
                 st.markdown("&nbsp;")
                 if st.button("🔄", help="Resetear filtros"):
                     st.rerun()
-
+            
             st.markdown("---")
-
+        
             uploaded_batch = st.file_uploader(
                 "Archivo CSV o Excel con títulos y categorías",
                 type=['csv', 'xlsx', 'xls'],
                 key="batch_upload",
                 help="Debe incluir columnas: titulo_sistema, departamento, familia, categoria (y opcionalmente SKU)"
             )
-
+            
+            # 👇 TODO lo demás va DENTRO de este if
             if uploaded_batch:
                 file_extension = uploaded_batch.name.split('.')[-1].lower()
-
+                
+                # 1) Leer archivo con manejo de errores
                 try:
                     if file_extension == 'csv':
                         batch_df = pd.read_csv(uploaded_batch, encoding='utf-8-sig')
@@ -1060,129 +1064,134 @@ else:
                         batch_df = pd.read_excel(uploaded_batch)
                 except Exception as e:
                     st.error(f"❌ Error al leer el archivo: {e}")
+                    st.stop()
+                
+                # 2) Validar columnas requeridas
+                required_cols = ['titulo_sistema', 'departamento', 'familia', 'categoria']
+                missing_cols = [col for col in required_cols if col not in batch_df.columns]
+                
+                if missing_cols:
+                    st.error(f"❌ Faltan columnas requeridas: {', '.join(missing_cols)}")
+                    st.info(
+                        "**Columnas encontradas:** " +
+                        ", ".join(batch_df.columns.tolist())
+                    )
+                    st.info("**Columnas requeridas:** " + ", ".join(required_cols))
+                else:
+                    # 3) Aplicar filtros opcionales
+                    filtered_df = batch_df.copy()
+                    filter_applied = False
                     
-                    required_cols = ['titulo_sistema', 'departamento', 'familia', 'categoria']
-                    missing_cols = [col for col in required_cols if col not in batch_df.columns]
-
-                    if missing_cols:
-                        st.error(f"❌ Faltan columnas requeridas: {', '.join(missing_cols)}")
+                    if selected_dept_batch != "Todos":
+                        filtered_df = filtered_df[
+                            filtered_df['departamento'] == selected_dept_batch
+                        ]
+                        filter_applied = True
+                    
+                    if selected_familia_batch != "Todos":
+                        filtered_df = filtered_df[
+                            filtered_df['familia'] == selected_familia_batch
+                        ]
+                        filter_applied = True
+                    
+                    if selected_categoria_batch != "Todos":
+                        filtered_df = filtered_df[
+                            filtered_df['categoria'] == selected_categoria_batch
+                        ]
+                        filter_applied = True
+                    
+                    if filter_applied:
                         st.info(
-                            "**Columnas encontradas:** " +
-                            ", ".join(batch_df.columns.tolist())
+                            f"🔍 Filtros aplicados: "
+                            f"{len(filtered_df)} de {len(batch_df)} productos seleccionados"
                         )
-                        st.info("**Columnas requeridas:** " + ", ".join(required_cols))
+                    
+                    st.dataframe(filtered_df.head(10))
+                    if len(filtered_df) > 10:
+                        st.caption(
+                            f"Mostrando las primeras 10 filas de {len(filtered_df)} productos"
+                        )
+                    
+                    # 4) Si no hay productos, aviso. Si sí hay, muestro el botón.
+                    if len(filtered_df) == 0:
+                        st.warning(
+                            "⚠️ No hay productos que coincidan con los filtros seleccionados"
+                        )
                     else:
-                        filtered_df = batch_df.copy()
-                        filter_applied = False
-
-                        if selected_dept_batch != "Todos":
-                            filtered_df = filtered_df[
-                                filtered_df['departamento'] == selected_dept_batch
-                            ]
-                            filter_applied = True
-
-                        if selected_familia_batch != "Todos":
-                            filtered_df = filtered_df[
-                                filtered_df['familia'] == selected_familia_batch
-                            ]
-                            filter_applied = True
-
-                        if selected_categoria_batch != "Todos":
-                            filtered_df = filtered_df[
-                                filtered_df['categoria'] == selected_categoria_batch
-                            ]
-                            filter_applied = True
-
-                        if filter_applied:
-                            st.info(
-                                f"🔍 Filtros aplicados: "
-                                f"{len(filtered_df)} de {len(batch_df)} productos seleccionados"
-                            )
-
-                        st.dataframe(filtered_df.head(10))
-                        if len(filtered_df) > 10:
-                            st.caption(
-                                f"Mostrando las primeras 10 filas de {len(filtered_df)} productos"
-                            )
-
-                        if len(filtered_df) == 0:
-                            st.warning(
-                                "⚠️ No hay productos que coincidan con los filtros seleccionados"
-                            )
-                        else:
-                            if st.button("🚀 Procesar Lote", type="primary"):
-                                progress_bar = st.progress(0)
-                                status_text = st.empty()
-                                results = []
-
-                                for idx, row in filtered_df.iterrows():
-                                    status_text.text(
-                                        f"Procesando {idx + 1} de {len(filtered_df)}..."
-                                    )
-
-                                    pattern = find_pattern_row(
-                                        df,
-                                        row['departamento'],
-                                        row['familia'],
-                                        row['categoria']
-                                    )
-
-                                    if pattern is None:
-                                        continue
-
-                                    nomenclatura = pattern['Nomenclatura sugerida']
-
-                                    product_info = {
-                                        "titulo_sistema_existente": row['titulo_sistema'],
-                                        "departamento": row['departamento'],
-                                        "familia": row['familia'],
-                                        "categoria": row['categoria'],
-                                        "marca": ""
+                        if st.button("🚀 Procesar Lote", type="primary"):
+                            progress_bar = st.progress(0)
+                            status_text = st.empty()
+                            results = []
+                            
+                            for idx, row in filtered_df.iterrows():
+                                status_text.text(
+                                    f"Procesando {idx + 1} de {len(filtered_df)}..."
+                                )
+                                
+                                pattern = find_pattern_row(
+                                    df,
+                                    row['departamento'],
+                                    row['familia'],
+                                    row['categoria']
+                                )
+                                
+                                if pattern is None:
+                                    # No hay regla para esa categoría
+                                    continue
+                                
+                                nomenclatura = pattern['Nomenclatura sugerida']
+                                
+                                product_info = {
+                                    "titulo_sistema_existente": row['titulo_sistema'],
+                                    "departamento": row['departamento'],
+                                    "familia": row['familia'],
+                                    "categoria": row['categoria'],
+                                    "marca": ""
+                                }
+                                
+                                result = generate_titles(
+                                    product_info,
+                                    nomenclatura,
+                                    st.session_state.transformation_memory
+                                )
+                                
+                                if result:
+                                    row_out = {
+                                        'titulo_sistema_original': row['titulo_sistema'],
+                                        'departamento': row['departamento'],
+                                        'familia': row['familia'],
+                                        'categoria': row['categoria']
                                     }
-
-                                    result = generate_titles(
-                                        product_info,
-                                        nomenclatura,
-                                        st.session_state.transformation_memory
-                                    )
-
-                                    if result:
-                                        row_out = {
-                                            'titulo_sistema_original': row['titulo_sistema'],
-                                            'departamento': row['departamento'],
-                                            'familia': row['familia'],
-                                            'categoria': row['categoria']
-                                        }
-                                        if 'SKU' in filtered_df.columns:
-                                            row_out['SKU'] = row['SKU']
-                                        if want_sistema and 'titulo_sistema' in result:
-                                            row_out['titulo_sistema_generado'] = result['titulo_sistema']
-                                        if want_etiqueta and 'titulo_etiqueta' in result:
-                                            row_out['titulo_etiqueta'] = result['titulo_etiqueta']
-                                        if want_seo and 'titulo_seo' in result:
-                                            row_out['titulo_seo'] = result['titulo_seo']
-
-                                        results.append(row_out)
-
-                                    progress_bar.progress((idx + 1) / len(filtered_df))
-
-                                status_text.empty()
-
-                                if results:
-                                    st.success(f"✅ Procesados {len(results)} títulos")
-                                    results_df = pd.DataFrame(results)
-                                    st.dataframe(results_df)
-
-                                    csv = results_df.to_csv(index=False, encoding='utf-8-sig')
-                                    st.download_button(
-                                        label="📥 Descargar Resultados",
-                                        data=csv,
-                                        file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                                        mime="text/csv"
-                                    )
-                                else:
-                                    st.warning("⚠️ No se generaron resultados")
-
+                                    # Mantener SKU si viene
+                                    if 'SKU' in filtered_df.columns:
+                                        row_out['SKU'] = row['SKU']
+                                    if want_sistema and 'titulo_sistema' in result:
+                                        row_out['titulo_sistema_generado'] = result['titulo_sistema']
+                                    if want_etiqueta and 'titulo_etiqueta' in result:
+                                        row_out['titulo_etiqueta'] = result['titulo_etiqueta']
+                                    if want_seo and 'titulo_seo' in result:
+                                        row_out['titulo_seo'] = result['titulo_seo']
+                                    
+                                    results.append(row_out)
+                                
+                                progress_bar.progress((idx + 1) / len(filtered_df))
+                            
+                            status_text.empty()
+                            
+                            if results:
+                                st.success(f"✅ Procesados {len(results)} títulos")
+                                results_df = pd.DataFrame(results)
+                                st.dataframe(results_df)
+                                
+                                csv = results_df.to_csv(index=False, encoding='utf-8-sig')
+                                st.download_button(
+                                    label="📥 Descargar Resultados",
+                                    data=csv,
+                                    file_name=f"batch_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                                    mime="text/csv"
+                                )
+                            else:
+                                st.warning("⚠️ No se generaron resultados")
 # Footer
 st.markdown("---")
 st.caption("Generador de Títulos de Catálogo by JC - Cemaco © 2025")
