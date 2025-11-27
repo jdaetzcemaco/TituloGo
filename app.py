@@ -107,7 +107,32 @@ def remove_brand_occurrences(text: str, brand: str) -> str:
     t = t.replace(_cap_first(brand.lower()), "")
 
     return " ".join(t.split()).strip()
+FORBIDDEN_TECH_TERMS = [
+    "penetrante",
+    "hidráulico", "hidraulico",
+    "neumático", "neumatico",
+    "amortiguador",
+    "dieléctrico", "dielektrico",
+    "epóxico", "epoxico", "epóxica", "epoxica",
+    "antigripante",
+    "dieléctrica", "dielektrica"
+]
 
+def remove_forbidden_terms(text: str) -> str:
+    """
+    Elimina términos técnicos que el modelo suele inventar
+    y que no queremos a menos que vengan explícitos en el ERP.
+    """
+    if not text:
+        return text
+
+    out = str(text)
+    for term in FORBIDDEN_TECH_TERMS:
+        pattern = re.compile(rf"\b{re.escape(term)}\b", re.IGNORECASE)
+        out = pattern.sub("", out)
+
+    # limpia espacios dobles / inicio / fin
+    return " ".join(out.split())
 
 # ========= Helpers para match de nomenclatura =========
 
@@ -275,6 +300,14 @@ REGLAS UNIVERSALES (OBLIGATORIAS):
   salvo acrónimos.
 - No termines los títulos con frases genéricas como “para plomería”, “para tubería”,
   “para ferretería”, “para construcción”, “para el hogar” u otras similares.
+  - NO inventes características técnicas que no estén en el título original ni sean obvias por el tipo de producto.
+  No agregues términos como “penetrante”, “hidráulico”, “neumático”, “amortiguador”, 
+  “epóxico”, “dieléctrico” u otros similares a menos que vengan explícitos en los datos.
+- No infieras mecanismos internos ni especificaciones avanzadas (hidráulico, neumático, resorte,
+  amortiguador, dieléctrico, etc.) si el ERP no lo menciona.
+- Mantén un español natural, usando preposiciones cuando correspondan 
+  (a, ante, bajo, con, contra, de, desde, durante, en, entre, hacia, hasta, mediante, 
+   para, por, según, sin, sobre, tras). No generes títulos “telegrafiados” donde desaparecen estas palabras.
 - Usa “para…” únicamente cuando aporte un uso específico del producto
   (ej: “para agua fría”, “para gas”, “para exterior”, “para conducción eléctrica”,
   “para drenaje”, “para ducha”, “para piso”, etc.).
@@ -382,22 +415,22 @@ RESPONDE SOLO CON UN JSON VÁLIDO con este formato exacto:
             if key in result and isinstance(result[key], str):
                 t = result[key]
 
-                # 1) Memoria de transformaciones (pulgada -> plg, etc.)
+                               # 1) Memoria de transformaciones (pulgadas -> plg, etc.)
                 t = apply_transformations(t, transformations)
 
-                # 2) Quitar marca si se coló
+                # 2) Quita marca
                 t = remove_brand_occurrences(t, brand)
 
-                # 3) Corregir mayúsculas tipo "BOMBA" -> "Bomba"
+                # 3) Mayúsculas correctas
                 t = de_shout(t)
 
-                # 4) Quitar finales genéricos "para plomería / para tubería / para el hogar"
+                # 4) Elimina términos técnicos que no queremos inventar
+                t = remove_forbidden_terms(t)
+
+                # 5) Quita finales genéricos ("para plomería", "para tubería", etc.)
                 t = remove_generic_para_phrases(t)
 
-                # 5) Normalizar unidades técnicas (HP, m, L/min)
-                t = normalize_units_semi_technical(t)
-
-                # 6) Limpiar espacios
+                # 6) Normaliza espacios
                 result[key] = " ".join(t.split())
 
         return result
@@ -963,7 +996,7 @@ else:
 
                 except Exception as e:
                     st.error(f"❌ Error al leer el archivo: {e}")
-
+                    st.stop()  # detiene la ejecución y no intenta seguir con batch_df
         else:
             # Modo completo
             st.markdown("### 📋 Modo Completo")
