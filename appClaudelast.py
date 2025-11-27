@@ -274,47 +274,25 @@ def quick_validation_rules(original_title: str, generated_title: str) -> list:
     if not original_title or not generated_title:
         return issues
     
-    # Rule 1: Check for TAXONOMY additions (department/category context)
-    taxonomy_phrases = [
-        'de plomería', 'de plomeria',
-        'de tubería', 'de tuberia',
-        'de construcción', 'de construccion',
-        'de ferretería', 'de ferreteria',
-        'accesorio de plomería', 'accesorio de tubería',
-        'accesorio de plomeria', 'accesorio de tuberia',
-        'para plomería', 'para tubería',
-        'para plomeria', 'para tuberia'
-    ]
-    
-    for phrase in taxonomy_phrases:
-        if phrase in generated_title.lower() and phrase not in original_title.lower():
-            issues.append(f"TAXONOMY ADDITION: Added '{phrase}' - user already knows department/category")
-    
-    # Rule 2: Check for FUNCTIONAL CONTEXT additions
-    functional_phrases = [
-        'sellado roscas', 'sellado de roscas',
-        'manual drenajes', 'drenajes',
-        'uso doméstico', 'uso domestico',
-        'uso industrial', 'uso profesional',
-        'cocina', 'lavamanos', 'baño',
-        'para sellado', 'para drenajes'
-    ]
-    
-    for phrase in functional_phrases:
-        if phrase in generated_title.lower() and phrase not in original_title.lower():
-            issues.append(f"FUNCTIONAL CONTEXT: Added '{phrase}' - obvious from product type")
-    
-    # Rule 3: Check for problematic "para X" additions with abbreviations
+    # Rule 1: Check for problematic "para X" additions
+    # These are generic phrases that shouldn't be added unless in original
     problematic_para = [
-        'para agua sucia', 'para agua limpia'
+        'para agua sucia', 'para agua limpia',
+        'para sellado de roscas', 'para sellado',
+        'para drenajes y tuberías', 'para drenajes',
+        'para construcción', 'para plomería',
+        'para tubería', 'para ferretería'
     ]
     
     for phrase in problematic_para:
         if phrase in generated_title.lower():
+            # Check if it's in original (accounting for abbreviations)
             orig_upper = original_title.upper()
+            # Check common abbreviations
             abbrev_map = {
                 'para agua sucia': ['A.SUCIA', 'A SUCIA'],
-                'para agua limpia': ['A.LIMP', 'A LIMP']
+                'para agua limpia': ['A.LIMP', 'A LIMP'],
+                'para sellado': ['P/SELLADO', 'P SELLADO'],
             }
             
             found_in_original = False
@@ -324,35 +302,27 @@ def quick_validation_rules(original_title: str, generated_title: str) -> list:
                 for abbrev in abbrev_map[phrase]:
                     if abbrev in orig_upper:
                         # If abbreviated, we should convert but NOT add "para"
-                        issues.append(f"ABBREVIATION ERROR: Added 'para' with '{phrase}' (original has '{abbrev}' - should be just 'Agua Sucia/Limpia')")
+                        issues.append(f"Incorrectly added 'para' with abbreviation: '{phrase}' (original has '{abbrev}')")
                         found_in_original = True
                         break
             
             if not found_in_original:
-                issues.append(f"UNNECESSARY PARA: Added '{phrase}'")
+                issues.append(f"Added generic phrase not in original: '{phrase}'")
     
-    # Rule 4: Check for invented attributes
-    invented_attributes = ['manual', 'automático', 'automatico', 'profesional', 'doméstico', 'domestico']
-    for attr in invented_attributes:
-        if attr in generated_title.lower() and attr not in original_title.lower():
-            # Make sure it's a standalone word
-            pattern = re.compile(rf'\b{re.escape(attr)}\b', re.IGNORECASE)
-            if pattern.search(generated_title) and not pattern.search(original_title):
-                issues.append(f"INVENTED ATTRIBUTE: Added '{attr}' not in original")
-    
-    # Rule 5: Check for invented technical terms
+    # Rule 2: Check for invented technical terms
     for term in FORBIDDEN_TECH_TERMS:
         if term.lower() in generated_title.lower() and term.lower() not in original_title.lower():
-            issues.append(f"INVENTED TECH: '{term}'")
+            issues.append(f"Invented technical term: '{term}'")
     
-    # Rule 6: Check critical measurements are preserved
+    # Rule 3: Check critical measurements are preserved
     measurements = re.findall(r'\d+(?:/\d+)?(?:\s*(?:mm|cm|m|plg|pulgada|Hp|HP|L/min|W))', original_title)
     for measure in measurements:
+        # Normalize for comparison
         measure_normalized = measure.replace('Hp', 'HP').replace('hp', 'HP')
         gen_normalized = generated_title.replace('Hp', 'HP').replace('hp', 'HP')
         
         if measure_normalized not in gen_normalized:
-            issues.append(f"MISSING MEASUREMENT: '{measure}'")
+            issues.append(f"Missing critical measurement: '{measure}'")
     
     return issues
 
@@ -363,78 +333,66 @@ def validate_with_agent(original_title: str, generated_title: str, api_key: str)
     Returns: dict with validation results
     """
     
-    validation_prompt = f"""Eres un agente de control de calidad ULTRA-ESTRICTO. Tu trabajo es ELIMINAR toda información redundante de títulos de productos.
+    validation_prompt = f"""Eres un agente de control de calidad. Tu trabajo es validar y corregir títulos de productos generados por otro sistema.
 
 TÍTULO ORIGINAL DEL ERP: {original_title}
 TÍTULO GENERADO: {generated_title}
 
-REGLAS ULTRA-ESTRICTAS:
+REGLAS ESTRICTAS DE VALIDACIÓN:
 
-🚨 PRINCIPIO: El usuario YA ESTÁ navegando en la sección del producto. NO necesita que le recuerdes el departamento, categoría o función obvia.
+1. REGLA CRÍTICA - Conversión de abreviaciones vs "para":
+   - Si el original dice "A.SUCIA" o "A SUCIA" → convertir a "Agua Sucia" (SIN agregar "para")
+   - Si el original dice "A.LIMP" o "A LIMP" → convertir a "Agua Limpia" (SIN agregar "para")
+   - Si el original dice "P/" → convertir a "para"
+   - Si el original dice "C/" → convertir a "con"
+   - NUNCA agregues "para" antes de una abreviación convertida a menos que el original tenga "P/"
 
-1. ELIMINA CONTEXTO DE TAXONOMÍA:
-   ❌ ELIMINA: "de Plomería", "de Tubería", "de Construcción", "de Ferretería"
-   ❌ ELIMINA: "Accesorio de Plomería", "Accesorio de Tubería"
-   ❌ ELIMINA: "para Plomería", "para Tubería"
-   
-   Razón: Usuario está EN la sección de plomería. Es redundante decir "de Plomería".
+2. REGLA CRÍTICA - Frases genéricas:
+   - NUNCA agregues "para sellado de roscas" a menos que esté explícito en el original
+   - NUNCA agregues "para drenajes y tuberías" a menos que esté explícito
+   - NUNCA agregues contexto genérico que no esté en el original
 
-2. ELIMINA CONTEXTO FUNCIONAL OBVIO:
-   ❌ ELIMINA: "Sellado Roscas", "Sellado de Roscas"
-   ❌ ELIMINA: "Manual Drenajes", "Drenajes"
-   ❌ ELIMINA: "Uso Doméstico", "Uso Industrial"
-   ❌ ELIMINA: "Cocina", "Lavamanos", "Baño" (cuando obvio por tipo de producto)
-   
-   Razón: Si es "Cinta Teflón" el usuario YA SABE que es para sellar roscas.
+3. Especificaciones técnicas:
+   - TODA especificación en el título generado debe existir en el original
+   - NO inventes características técnicas
+   - Mantén medidas exactas (HP, plg, mm, cm, m, L/min)
 
-3. CONVERSIÓN DE ABREVIACIONES SIN "PARA":
-   - Si original tiene "A.SUCIA" o "A SUCIA":
-     ✅ CORRECTO: "Agua Sucia"
-     ❌ MAL: "para Agua Sucia"
-   
-   - Si original tiene "A.LIMP" o "A LIMP":
-     ✅ CORRECTO: "Agua Limpia"
-     ❌ MAL: "para Agua Limpia"
+4. Frases "para X" solo si:
+   - Están explícitas en el original, O
+   - Son conversión directa de "P/" en el original
 
-4. NO INVENTES ATRIBUTOS:
-   - Si original NO dice "Manual" → NO lo agregues
-   - Si original NO dice "Doméstico" → NO lo agregues
-   - Solo incluye lo que ESTÁ en el título original
+EJEMPLOS DE ERRORES COMUNES A CORREGIR:
 
-EJEMPLOS DE CORRECCIONES:
+❌ MAL:
+Original: "BOMBA SUM A.SUCIA 1 1/2HP"
+Generado: "Bomba Sumergible para Agua Sucia 1 1/2 HP"
+Problema: Agregó "para" cuando el original solo tiene "A.SUCIA"
 
-❌ MAL: "Cinta Teflón 1/2 x 7m Sellado Roscas"
-✅ CORREGIDO: "Cinta Teflón 1/2 x 7m"
-Razón: "Sellado Roscas" es obvio para cinta teflón
+✅ BIEN:
+Original: "BOMBA SUM A.SUCIA 1 1/2HP"
+Corregido: "Bomba Sumergible Agua Sucia 1 1/2 HP"
 
-❌ MAL: "Cruz PVC 1/2 Accesorio de Plomería"
-✅ CORREGIDO: "Cruz PVC 1/2"
-Razón: Usuario está en sección de plomería
+❌ MAL:
+Original: "CINTA TEFLON 1/2X7M"
+Generado: "Cinta de Teflón 1/2 plg x 7 m para sellado de roscas"
+Problema: Agregó "para sellado de roscas" que no está en original
 
-❌ MAL: "Destapacaños Tipo Pistola 7.6m Manual Drenajes"
-✅ CORREGIDO: "Destapacaños Tipo Pistola 7.6m"
-Razón: "Manual" no está en original, "Drenajes" es categoría obvia
+✅ BIEN:
+Original: "CINTA TEFLON 1/2X7M"
+Corregido: "Cinta de Teflón 1/2 plg x 7 m"
 
-❌ MAL: "Bomba Sumergible para Agua Limpia 1/2 HP 8m 140 L/min"
-✅ CORREGIDO: "Bomba Sumergible Agua Limpia 1/2 HP 8m 140 L/min"
-Razón: NO agregues "para" antes de abreviación convertida
-
-❌ MAL: "Desagüe Lavaplatos 1 1/2 Doble Cocina"
-✅ CORREGIDO: "Desagüe para Lavaplatos 1 1/2 Doble"
-Razón: "Cocina" es contexto obvio para lavaplatos
-
-ANALIZA EL TÍTULO GENERADO:
-1. ¿Tiene información de taxonomía innecesaria? (de Plomería, Accesorio de...)
-2. ¿Tiene contexto funcional obvio? (Sellado, Drenajes, Manual...)
-3. ¿Tiene "para" antes de abreviaciones convertidas? (para Agua Sucia)
-4. ¿Tiene atributos inventados no en el original?
+ANALIZA:
+1. Compara palabra por palabra el título generado vs original
+2. Identifica cada adición que no esté en el original
+3. Para cada adición pregunta: ¿Es técnicamente necesaria o es fluff genérico?
+4. Corrige removiendo frases genéricas innecesarias
 
 RESPONDE SOLO CON JSON VÁLIDO:
 {{
     "is_valid": true/false,
-    "corrected_title": "versión MÍNIMA sin redundancias",
-    "issues_found": ["lista de problemas"],
-    "removed_phrases": ["frases eliminadas"],
+    "corrected_title": "versión corregida del título",
+    "issues_found": ["lista de problemas encontrados"],
+    "removed_phrases": ["frases genéricas removidas"],
     "confidence": "high/medium/low"
 }}"""
 
@@ -503,74 +461,29 @@ PATRÓN DE NOMENCLATURA A SEGUIR:
 TRANSFORMACIONES CONSISTENTES:
 {json.dumps(transformations, indent=2, ensure_ascii=False)}
 
-REGLAS ULTRA-ESTRICTAS (OBLIGATORIAS):
+REGLAS CRÍTICAS (OBLIGATORIAS):
 
-🚨 PRINCIPIO FUNDAMENTAL:
-Sigue el patrón de nomenclatura EXACTAMENTE. NO agregues NADA más allá de lo que está en el título original.
-
-1. SIGUE EL PATRÓN SOLAMENTE:
-   - Si el patrón dice "Tipo + Medida" → solo eso
-   - Si el patrón dice "Tipo + Material + Medida" → solo eso
-   - NO agregues contexto funcional
-   - NO agregues información de taxonomía (departamento/familia/categoría)
-
-2. CERO ADICIONES DE TAXONOMÍA:
-   ❌ NUNCA agregues nombre de departamento: "de Plomería", "de Pinturas"
-   ❌ NUNCA agregues nombre de familia: "Accesorios", "Herramientas"
-   ❌ NUNCA agregues nombre de categoría: "Selladores", "Drenajes", "Tubería"
-   
-   El usuario YA está navegando en esa sección. Es redundante.
-
-3. CERO CONTEXTO FUNCIONAL:
-   ❌ NUNCA: "Sellado Roscas", "Sellado de Roscas"
-   ❌ NUNCA: "Accesorio de Plomería", "Accesorio de Tubería"
-   ❌ NUNCA: "Manual Drenajes", "para Drenajes"
-   ❌ NUNCA: "Uso Doméstico", "Uso Industrial"
-   
-   Ejemplos CORRECTOS:
-   - Original: "CINTA TEFLON 1/2X7M"
-     ✅ Correcto: "Cinta Teflón 1/2 x 7m"
-     ❌ Mal: "Cinta Teflón 1/2 x 7m Sellado Roscas"
-   
-   - Original: "CRUZ PVC 1/2 LISO"
-     ✅ Correcto: "Cruz PVC 1/2 Liso"
-     ❌ Mal: "Cruz PVC 1/2 Liso Accesorio de Plomería"
-   
-   - Original: "DESTAPACANOS TIPO PISTOLA 7.6M"
-     ✅ Correcto: "Destapacaños Tipo Pistola 7.6m"
-     ❌ Mal: "Destapacaños Tipo Pistola 7.6m Manual Drenajes"
-
-4. SOLO ATRIBUTOS DESCRIPTIVOS DEL ORIGINAL:
-   - Si el original dice "TIPO PISTOLA" → incluye "Tipo Pistola"
-   - Si el original dice "CON GUIA" → incluye "con Guía"
-   - Si el original dice "DOBLE" → incluye "Doble"
-   - Si el original NO lo menciona → NO lo agregues
-
-5. CONVERSIÓN DE ABREVIACIONES (SIN AGREGAR "PARA"):
+1. ABREVIACIONES - NO agregues "para":
    - A.SUCIA / A SUCIA → "Agua Sucia" (NO "para Agua Sucia")
    - A.LIMP / A LIMP → "Agua Limpia" (NO "para Agua Limpia")
-   - P/ → "para" (conversión directa)
-   - C/ → "con" (conversión directa)
-   - S/ → "sin" (conversión directa)
+   - Solo usa "para" si el original tiene "P/" explícitamente
 
-6. NO INVENTES ATRIBUTOS:
-   - NO agregues "Manual" si no está en el original
-   - NO agregues "Doméstico" si no está en el original
-   - NO agregues "Profesional" si no está en el original
-   - NO agregues aplicaciones o usos
+2. NUNCA agregues frases genéricas:
+   - ❌ "para sellado de roscas"
+   - ❌ "para drenajes y tuberías"
+   - ❌ "para construcción"
+   Solo agrega "para X" si:
+   - Es conversión de "P/" en el original, O
+   - El uso es específico (para gas, para agua fría, para exterior)
 
-7. UNIDADES Y MEDIDAS:
-   - HP en MAYÚSCULAS: "1/2 HP", "1 HP"
-   - L/min (no "litros por minuto"): "140 L/min"
-   - m (no "metros"): "7.6m", "30m"
-   - mm, cm, plg: mantener abreviaciones
+3. NUNCA incluyas marcas en los títulos
 
-8. NUNCA incluyas marcas en los títulos
+4. NUNCA inventes características técnicas que no estén en el original
+   (No agregues: penetrante, hidráulico, neumático, dieléctrico, etc.)
 
-🎯 REGLA DE ORO:
-Cuando tengas duda entre agregar o no agregar algo → NO LO AGREGUES.
-Menos es más. El producto habla por sí mismo.
-El contexto del usuario (departamento/categoría) ya es conocido.
+5. Mantén medidas exactas: HP (mayúsculas), plg, mm, cm, m, L/min
+
+6. Usa español natural con preposiciones (de, con, x) cuando corresponda
 
 PRODUCTOS A PROCESAR:
 {json.dumps(products_json, indent=2, ensure_ascii=False)}
@@ -580,7 +493,7 @@ RESPONDE SOLO CON UN JSON ARRAY con {len(products_batch)} objetos (mismo orden q
   {{
     "titulo_sistema": "max 40 caracteres",
     "titulo_etiqueta": "max 36 caracteres",
-    "titulo_seo": "descriptivo pero SIN contexto de taxonomía ni función obvia"
+    "titulo_seo": "50-70 caracteres optimizado para búsqueda"
   }},
   ...
 ]"""
@@ -1157,4 +1070,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.caption("Generador de Títulos de Catálogo con Sistema de Validación de Dos Agentes - By JC - Cemaco © 2025")
+st.caption("Generador de Títulos de Catálogo con Sistema de Validación de Dos Agentes -by JC - Cemaco © 2025")
